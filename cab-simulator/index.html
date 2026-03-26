@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>淡海輕軌駕駛室模擬教學系統</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 頂部資訊列 -->
+  <header id="topBar">
+    <h1>淡海輕軌駕駛室模擬教學系統</h1>
+    <div class="status-bar">
+      <span id="statusText">系統就緒 — 請轉動鑰匙啟動</span>
+    </div>
+  </header>
+
+  <!-- 駕駛室主視圖 -->
+  <div id="cabView">
+    <div id="cabContainer">
+      <!-- 背景圖 -->
+      <img id="cabImg" src="img/cab-3d.png" alt="駕駛室操控台" draggable="false" />
+      <!-- SVG 互動疊加層 -->
+      <svg id="overlaySvg" viewBox="0 0 1411 613" preserveAspectRatio="xMidYMid meet"></svg>
+
+      <!-- 上方資訊面板（覆蓋在圖片頂部區域） -->
+      <div id="infoPanel">
+        <div class="info-tabs">
+          <button class="info-tab active" data-tab="status">列車狀態</button>
+          <button class="info-tab" data-tab="procedure">操作程序</button>
+          <button class="info-tab" data-tab="troubleshoot">故障排除</button>
+          <button class="info-tab" data-tab="notes">注意事項</button>
+        </div>
+        <div id="infoContent" class="info-content"></div>
+      </div>
+      <button id="infoPanelToggle" class="info-toggle" title="收合/展開資訊面板">▲</button>
+    </div>
+  </div>
+
+  <!-- Tooltip -->
+  <div id="tooltip" class="tooltip"></div>
+
+  <!-- E 區彈出面板 -->
+  <div id="ePanelOverlay" class="panel-overlay hidden">
+    <div id="ePanelContainer" class="panel-container">
+      <div class="panel-header">
+        <h2>E 區：應急操作與控制面板</h2>
+        <button id="ePanelClose" class="panel-close">&times;</button>
+      </div>
+      <div class="panel-body">
+        <div id="ePanelWrap">
+          <object id="ePanelSvg" data="img/e-panel.svg" type="image/svg+xml"></object>
+          <!-- E 區互動疊加層 -->
+          <svg id="ePanelOverlaySvg" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HMI 螢幕放大面板（預留） -->
+  <div id="hmiOverlay" class="panel-overlay hidden">
+    <div id="hmiContainer" class="panel-container hmi-container">
+      <div class="panel-header">
+        <h2 id="hmiTitle">螢幕</h2>
+        <button id="hmiClose" class="panel-close">&times;</button>
+      </div>
+      <div class="panel-body" id="hmiBody">
+        <!-- 動態載入螢幕內容 -->
+      </div>
+    </div>
+  </div>
+
+<script src="js/equipment-data.js"></script>
+<script src="js/cab-simulator.js"></script>
+</body>
+</html>

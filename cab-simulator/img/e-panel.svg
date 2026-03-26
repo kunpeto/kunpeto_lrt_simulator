@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" width="600" height="700">
+  <defs>
+    <linearGradient id="tealBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#48D0C8"/>
+      <stop offset="100%" stop-color="#3CB8B0"/>
+    </linearGradient>
+    <radialGradient id="redBtn" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#E03030"/>
+      <stop offset="100%" stop-color="#B01818"/>
+    </radialGradient>
+    <radialGradient id="yellowMush" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#E8D030"/>
+      <stop offset="100%" stop-color="#C0A818"/>
+    </radialGradient>
+    <radialGradient id="yellowBtn" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#E8D840"/>
+      <stop offset="100%" stop-color="#C0B020"/>
+    </radialGradient>
+    <radialGradient id="grayKnob" cx="45%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#D0D0D0"/>
+      <stop offset="100%" stop-color="#909098"/>
+    </radialGradient>
+    <radialGradient id="darkKnob" cx="45%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#505058"/>
+      <stop offset="100%" stop-color="#2A2A30"/>
+    </radialGradient>
+    <radialGradient id="redIndicator" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#D02020"/>
+      <stop offset="100%" stop-color="#901010"/>
+    </radialGradient>
+    <radialGradient id="whiteBtn" cx="45%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#F0F0F0"/>
+      <stop offset="100%" stop-color="#C8C8C8"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ========== 青色背景 ========== -->
+  <rect x="0" y="0" width="600" height="700" rx="8" fill="url(#tealBg)"/>
+
+  <!-- ========== 黑色面板底板 ========== -->
+  <rect x="30" y="25" width="440" height="550" rx="6" fill="#1A1A20" stroke="#303038" stroke-width="2"/>
+
+  <!-- 四角螺絲 -->
+  <circle cx="46" cy="41" r="5" fill="#404048" stroke="#505058" stroke-width="1"/>
+  <circle cx="454" cy="41" r="5" fill="#404048" stroke="#505058" stroke-width="1"/>
+  <circle cx="46" cy="559" r="5" fill="#404048" stroke="#505058" stroke-width="1"/>
+  <circle cx="454" cy="559" r="5" fill="#404048" stroke="#505058" stroke-width="1"/>
+
+  <!-- ================================================ -->
+  <!--  第一排：E1 HV OFF / E2 110V / E3 24V / E4 駐車  -->
+  <!-- ================================================ -->
+
+  <!-- E1: 集電弓降弓 HV OFF（黃色蘑菇頭按鈕）-->
+  <g id="E1">
+    <text x="100" y="72" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">集電弓降弓</text>
+    <text x="100" y="86" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">HV OFF</text>
+    <!-- 底座 -->
+    <circle cx="100" cy="120" r="30" fill="#404048" stroke="#505058" stroke-width="2"/>
+    <!-- 蘑菇頭 -->
+    <circle cx="100" cy="118" r="26" fill="url(#yellowMush)" stroke="#A09010" stroke-width="1.5"/>
+    <circle cx="100" cy="118" r="16" fill="url(#yellowBtn)" opacity="0.7"/>
+  </g>
+
+  <!-- E2: 客室110V插座開關（黃色圓形帶圖示）-->
+  <g id="E2">
+    <text x="200" y="72" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">客室110V插座開關</text>
+    <text x="200" y="86" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Socket 110V</text>
+    <circle cx="200" cy="120" r="22" fill="#E8E8E0" stroke="#C0C0B8" stroke-width="2.5"/>
+    <circle cx="200" cy="120" r="15" fill="url(#yellowBtn)" stroke="#B0A020" stroke-width="1"/>
+    <!-- 插座圖示 -->
+    <text x="200" y="125" text-anchor="middle" font-size="11" fill="#706010" font-family="sans-serif">⚡</text>
+  </g>
+
+  <!-- E3: 蓄電池24V（圓形指示燈）-->
+  <g id="E3">
+    <text x="310" y="72" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">蓄電池24V</text>
+    <text x="310" y="86" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Battery 24V</text>
+    <circle cx="310" cy="120" r="22" fill="#E8E8E0" stroke="#C0C0B8" stroke-width="2.5"/>
+    <circle cx="310" cy="120" r="15" fill="#D0D0C8"/>
+    <text x="310" y="125" text-anchor="middle" font-size="9" fill="#606060" font-family="monospace">24V</text>
+  </g>
+
+  <!-- E4: 駐車煞車 Parking（紅色圓形帶 P 圖示）-->
+  <g id="E4">
+    <text x="420" y="72" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">駐車煞車</text>
+    <text x="420" y="86" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Parking</text>
+    <circle cx="420" cy="120" r="22" fill="#E8E8E0" stroke="#C0C0B8" stroke-width="2.5"/>
+    <circle cx="420" cy="120" r="16" fill="url(#redIndicator)"/>
+    <text x="420" y="126" text-anchor="middle" font-size="16" fill="white" font-weight="bold" font-family="sans-serif">P</text>
+  </g>
+
+  <!-- ====================================================== -->
+  <!--  Override 應急操作區（白色虛線框）                        -->
+  <!-- ====================================================== -->
+  <rect x="48" y="160" width="300" height="380" rx="5" fill="none" stroke="#808088" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="198" y="530" text-anchor="middle" font-size="12" fill="#909098" font-family="sans-serif">應急操作按鈕</text>
+  <text x="198" y="545" text-anchor="middle" font-size="11" fill="#707078" font-family="sans-serif">Override</text>
+
+  <!-- ======== Override 第一排：E5 零速度 / E6 ATP / E7 HVAC ======== -->
+
+  <!-- E5: 零速度 Zero Speed（紅色帶透明蓋）-->
+  <g id="E5">
+    <text x="110" y="185" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">零速度</text>
+    <text x="110" y="199" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Zero Speed</text>
+    <!-- 透明蓋底座 -->
+    <rect x="78" y="210" width="64" height="64" rx="5" fill="#303038" stroke="#484850" stroke-width="1.5"/>
+    <!-- 透明蓋 -->
+    <rect x="82" y="214" width="56" height="56" rx="4" fill="rgba(180,180,190,0.15)" stroke="#707078" stroke-width="1"/>
+    <!-- 紅色按鈕 -->
+    <circle cx="110" cy="242" r="22" fill="url(#redBtn)" stroke="#801010" stroke-width="1.5"/>
+    <!-- 圖示 -->
+    <text x="110" y="248" text-anchor="middle" font-size="12" fill="#FFB0B0" font-family="sans-serif">⊘</text>
+  </g>
+
+  <!-- E6: 列車自動保護 ATP（紅色帶透明蓋）-->
+  <g id="E6">
+    <text x="198" y="185" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">列車自動保護</text>
+    <text x="198" y="199" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">ATP</text>
+    <rect x="166" y="210" width="64" height="64" rx="5" fill="#303038" stroke="#484850" stroke-width="1.5"/>
+    <rect x="170" y="214" width="56" height="56" rx="4" fill="rgba(180,180,190,0.15)" stroke="#707078" stroke-width="1"/>
+    <circle cx="198" cy="242" r="22" fill="url(#redBtn)" stroke="#801010" stroke-width="1.5"/>
+  </g>
+
+  <!-- E7: 空調關閉 HVAC OFF（銀色帶透明蓋）-->
+  <g id="E7">
+    <text x="286" y="185" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">空調關閉</text>
+    <text x="286" y="199" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">HVAC OFF</text>
+    <rect x="254" y="210" width="64" height="64" rx="5" fill="#303038" stroke="#484850" stroke-width="1.5"/>
+    <rect x="258" y="214" width="56" height="56" rx="4" fill="rgba(180,180,190,0.15)" stroke="#707078" stroke-width="1"/>
+    <circle cx="286" cy="242" r="22" fill="url(#grayKnob)" stroke="#707078" stroke-width="1.5"/>
+    <!-- 雪花圖示 -->
+    <text x="286" y="248" text-anchor="middle" font-size="16" fill="#404048" font-family="sans-serif">❄</text>
+  </g>
+
+  <!-- ======== Override 第二排：E8 EDM / E9 Doors ======== -->
+
+  <!-- E8: 降級模式 EDM（紅色帶透明蓋）-->
+  <g id="E8">
+    <text x="110" y="295" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">降級模式</text>
+    <text x="110" y="309" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">EDM</text>
+    <rect x="78" y="320" width="64" height="64" rx="5" fill="#303038" stroke="#484850" stroke-width="1.5"/>
+    <rect x="82" y="324" width="56" height="56" rx="4" fill="rgba(180,180,190,0.15)" stroke="#707078" stroke-width="1"/>
+    <circle cx="110" cy="352" r="22" fill="url(#redBtn)" stroke="#801010" stroke-width="1.5"/>
+  </g>
+
+  <!-- E9: 上下車門 Doors（紅色帶透明蓋）-->
+  <g id="E9">
+    <text x="198" y="295" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">上下車門</text>
+    <text x="198" y="309" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Doors</text>
+    <rect x="166" y="320" width="64" height="64" rx="5" fill="#303038" stroke="#484850" stroke-width="1.5"/>
+    <rect x="170" y="324" width="56" height="56" rx="4" fill="rgba(180,180,190,0.15)" stroke="#707078" stroke-width="1"/>
+    <circle cx="198" cy="352" r="22" fill="url(#redBtn)" stroke="#801010" stroke-width="1.5"/>
+  </g>
+
+  <!-- ======== Override 第三排：E10 Brake Release / E11 Towing ======== -->
+
+  <!-- E10: 煞車解除 Brake Release（紅色帶透明蓋）-->
+  <g id="E10">
+    <text x="110" y="405" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">煞車解除</text>
+    <text x="110" y="419" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Brake Release</text>
+    <rect x="78" y="430" width="64" height="64" rx="5" fill="#303038" stroke="#484850" stroke-width="1.5"/>
+    <rect x="82" y="434" width="56" height="56" rx="4" fill="rgba(180,180,190,0.15)" stroke="#707078" stroke-width="1"/>
+    <circle cx="110" cy="462" r="22" fill="url(#redBtn)" stroke="#801010" stroke-width="1.5"/>
+  </g>
+
+  <!-- E11: 拖救模式 Towing（紅色帶透明蓋）-->
+  <g id="E11">
+    <text x="198" y="405" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">拖救模式</text>
+    <text x="198" y="419" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Towing</text>
+    <rect x="166" y="430" width="64" height="64" rx="5" fill="#303038" stroke="#484850" stroke-width="1.5"/>
+    <rect x="170" y="434" width="56" height="56" rx="4" fill="rgba(180,180,190,0.15)" stroke="#707078" stroke-width="1"/>
+    <circle cx="198" cy="462" r="22" fill="url(#redBtn)" stroke="#801010" stroke-width="1.5"/>
+  </g>
+
+  <!-- ====================================================== -->
+  <!--  右側旋鈕區                                              -->
+  <!-- ====================================================== -->
+
+  <!-- E12: 駕駛室照明 Cab Lighting（旋鈕）-->
+  <g id="E12">
+    <text x="420" y="185" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">駕駛室照明</text>
+    <text x="420" y="199" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Cab Lighting</text>
+    <!-- 檔位圖示 -->
+    <text x="388" y="222" font-size="9" fill="#707078">☀</text>
+    <text x="445" y="222" font-size="9" fill="#707078">☀☀</text>
+    <!-- 旋鈕 -->
+    <circle cx="420" cy="242" r="20" fill="url(#darkKnob)" stroke="#606068" stroke-width="2"/>
+    <line x1="420" y1="242" x2="420" y2="225" stroke="#C0C0C0" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- E13: 客室照明 Saloon Lighting（旋鈕）-->
+  <g id="E13">
+    <text x="420" y="295" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">客室照明</text>
+    <text x="420" y="309" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Saloon Lighting</text>
+    <!-- 檔位標示 -->
+    <text x="385" y="335" font-size="8" fill="#707078">AUTO</text>
+    <text x="440" y="325" font-size="8" fill="#707078">OFF</text>
+    <!-- 旋鈕 -->
+    <circle cx="420" cy="348" r="20" fill="url(#darkKnob)" stroke="#606068" stroke-width="2"/>
+    <line x1="420" y1="348" x2="410" y2="333" stroke="#C0C0C0" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- E14: 電動遮陽簾 Sun Visor（旋鈕）-->
+  <g id="E14">
+    <text x="310" y="405" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">電動遮陽簾</text>
+    <text x="310" y="419" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">Sun Visor</text>
+    <!-- 方向標示 -->
+    <text x="310" y="435" text-anchor="middle" font-size="9" fill="#707078">↑ 停 ↓</text>
+    <!-- 旋鈕 -->
+    <circle cx="310" cy="462" r="22" fill="url(#darkKnob)" stroke="#606068" stroke-width="2"/>
+    <line x1="310" y1="462" x2="310" y2="443" stroke="#C0C0C0" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- E15: 第一道車門開/關 First Door（大旋鈕）-->
+  <g id="E15">
+    <text x="420" y="405" text-anchor="middle" font-size="11" fill="#C0C0C0" font-family="sans-serif">第一道門</text>
+    <text x="420" y="419" text-anchor="middle" font-size="9" fill="#808088" font-family="sans-serif">First Door OPEN/CLOSE</text>
+    <!-- 方向標示 -->
+    <text x="388" y="435" font-size="8" fill="#707078">左</text>
+    <text x="445" y="435" font-size="8" fill="#707078">右</text>
+    <!-- 外環 -->
+    <circle cx="420" cy="462" r="30" fill="#E8E8E0" stroke="#C0C0B8" stroke-width="2.5"/>
+    <!-- 旋鈕 -->
+    <circle cx="420" cy="462" r="22" fill="url(#darkKnob)" stroke="#505058" stroke-width="2"/>
+    <line x1="420" y1="462" x2="420" y2="442" stroke="#C0C0C0" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- ========== 面板外：底部螺絲 ========== -->
+  <circle cx="490" cy="590" r="5" fill="#404048" stroke="#505058" stroke-width="1"/>
+  <circle cx="490" cy="660" r="5" fill="#404048" stroke="#505058" stroke-width="1"/>
+</svg>

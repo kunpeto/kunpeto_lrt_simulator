@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>CMS 螢幕組裝預覽</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+.cms-screen {
+  position: relative;
+  width: 1024px;
+  height: 768px;
+  background: #0c1828;
+  overflow: hidden;
+  border: 2px solid #333;
+}
+
+/* 切片：從來源圖裁切一塊，放到指定位置 */
+.slice {
+  position: absolute;
+  background-repeat: no-repeat;
+  image-rendering: auto;
+}
+.slice-cms { background-image: url('cms-sprites/cms-test.png'); }
+.slice-door { background-image: url('cms-sprites/cms-door.png'); }
+
+/* 動態文字覆蓋層 */
+.text-overlay {
+  position: absolute;
+  color: #c8c8a0;
+  font-family: monospace;
+  pointer-events: none;
+}
+
+/* 訊息欄背景（覆蓋原始文字） */
+.infobar-bg {
+  position: absolute;
+  background: #0c1828;
+}
+
+/* 狀態切換用 */
+.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="cms-screen" id="cmsScreen">
+
+  <!-- ============================================ -->
+  <!--  基底：用原圖鋪滿整個螢幕當背景框架           -->
+  <!-- ============================================ -->
+  <div class="slice slice-cms" style="
+    left: 0; top: 0; width: 1024px; height: 768px;
+    background-position: 0 0;
+    background-size: 1024px 768px;
+    opacity: 1;
+  "></div>
+
+  <!-- ============================================ -->
+  <!--  訊息欄：覆蓋原始文字，改為動態文字            -->
+  <!-- ============================================ -->
+  <!-- 遮蓋原始時間/車號/日期/車速 -->
+  <div class="infobar-bg" style="left:0; top:0; width:380px; height:68px;"></div>
+
+  <!-- 動態文字 -->
+  <div class="text-overlay" style="left:20px; top:8px; font-size:20px; letter-spacing:3px;" id="cms-time">06 29 12</div>
+  <div class="text-overlay" style="left:210px; top:10px; font-size:16px; color:#808878;" id="cms-trainlabel">列車編號:</div>
+  <div class="text-overlay" style="left:310px; top:8px; font-size:20px; font-weight:bold;" id="cms-trainno">111</div>
+  <div class="text-overlay" style="left:20px; top:38px; font-size:16px; color:#808878;" id="cms-date">2026-03-25</div>
+  <div class="text-overlay" style="left:210px; top:36px; font-size:20px;" id="cms-speed">0 km/h</div>
+
+  <!-- 訊息欄右側圖示（從來源圖切片） -->
+  <!-- 警示燈 -->
+  <div class="slice slice-cms" id="cms-hazard" style="
+    left:390px; top:1px; width:87px; height:67px;
+    background-position: -390px -1px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 方向燈 -->
+  <div class="slice slice-cms" id="cms-turn" style="
+    left:544px; top:2px; width:88px; height:65px;
+    background-position: -544px -2px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 狀態 Se -->
+  <div class="slice slice-cms" id="cms-status" style="
+    left:695px; top:1px; width:86px; height:65px;
+    background-position: -695px -1px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 頭燈 -->
+  <div class="slice slice-cms" id="cms-headlight" style="
+    left:819px; top:3px; width:84px; height:64px;
+    background-position: -819px -3px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- ============================================ -->
+  <!--  故障訊息欄：遮蓋+動態                        -->
+  <!-- ============================================ -->
+  <div class="infobar-bg" style="left:0; top:69px; width:660px; height:60px;"></div>
+
+  <!-- i 圖示 + 故障內容 -->
+  <div class="text-overlay" style="left:10px; top:75px; font-size:13px;">
+    <span style="display:inline-block;width:22px;height:22px;border:1.5px solid #3878a8;border-radius:50%;text-align:center;line-height:22px;color:#3878a8;font-weight:bold;font-family:serif;">i</span>
+  </div>
+  <div class="text-overlay" style="left:38px; top:75px; font-size:13px;">
+    <span style="color:#b82020;font-size:16px;">▲</span>
+    <span style="color:#b89030;" id="cms-err1-code">4610</span>
+    <span style="color:#806848; font-size:11px;" id="cms-err1-time">25.03.2026 - 05:00:30</span>
+    <span style="color:#b89030;" id="cms-err1-icon">🔥</span>
+    <span style="color:#b89030;" id="cms-err1-desc">驅動/剎車控制C</span>
+  </div>
+  <div class="text-overlay" style="left:38px; top:97px; font-size:13px;" id="cms-err2">
+    <span style="color:#b82020;font-size:16px;">▲</span>
+    <span style="color:#b89030;">14506</span>
+    <span style="color:#806848; font-size:11px;">10.06.2019 - 15:29:21</span>
+    <span style="color:#b89030;">🔥</span>
+    <span style="color:#b89030;">能源系統附加設備B + G</span>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  狀態資訊欄：遮蓋+動態                        -->
+  <!-- ============================================ -->
+  <div class="infobar-bg" style="left:0; top:130px; width:660px; height:28px;"></div>
+  <div style="position:absolute; left:0; top:130px; width:660px; height:28px; border-top:1px solid #383850; border-bottom:1px solid #383850;"></div>
+
+  <div class="text-overlay" style="left:30px; top:135px; font-size:14px; color:#808878; text-decoration:underline;" id="cms-mileage">310786 km</div>
+  <div style="position:absolute; left:180px; top:132px; width:1px; height:24px; background:#383850;"></div>
+  <div class="text-overlay" style="left:200px; top:135px; font-size:14px; color:#808878;" id="cms-driver-end">B</div>
+  <div style="position:absolute; left:240px; top:132px; width:1px; height:24px; background:#383850;"></div>
+  <div class="text-overlay" style="left:280px; top:135px; font-size:14px; color:#808878;" id="cms-drive-mode">主線模式</div>
+
+  <!-- 遮蓋原始狀態列（0 km / 關閉模式） -->
+  <div class="infobar-bg" style="left:0; top:158px; width:660px; height:40px;"></div>
+
+  <!-- ============================================ -->
+  <!--  左區第1排 圖標                                -->
+  <!-- ============================================ -->
+  <!-- 機廠電源 -->
+  <div class="slice slice-cms" id="cms-icon-depot" style="
+    left:14px; top:216px; width:125px; height:78px;
+    background-position: -14px -216px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 客室照明 -->
+  <div class="slice slice-cms" id="cms-icon-light" style="
+    left:139px; top:214px; width:114px; height:82px;
+    background-position: -139px -214px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- ABS -->
+  <div class="slice slice-cms" id="cms-icon-abs" style="
+    left:255px; top:216px; width:100px; height:82px;
+    background-position: -255px -216px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 集電弓 -->
+  <div class="slice slice-cms" id="cms-icon-panto" style="
+    left:362px; top:214px; width:107px; height:86px;
+    background-position: -362px -214px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- ============================================ -->
+  <!--  左區第2排 圖標                                -->
+  <!-- ============================================ -->
+  <!-- 雨刷水箱 -->
+  <div class="slice slice-cms" id="cms-icon-wiper" style="
+    left:26px; top:345px; width:112px; height:93px;
+    background-position: -26px -345px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 火警偵煙器 -->
+  <div class="slice slice-cms" id="cms-icon-fire" style="
+    left:150px; top:345px; width:95px; height:92px;
+    background-position: -150px -345px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- PEB -->
+  <div class="slice slice-cms" id="cms-icon-peb" style="
+    left:247px; top:346px; width:115px; height:91px;
+    background-position: -247px -346px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 110V -->
+  <div class="slice slice-cms" id="cms-icon-110v" style="
+    left:368px; top:344px; width:102px; height:91px;
+    background-position: -368px -344px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 380V -->
+  <div class="slice slice-cms" id="cms-icon-380v" style="
+    left:475px; top:345px; width:105px; height:91px;
+    background-position: -475px -345px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- ============================================ -->
+  <!--  左區第3排 按鈕                                -->
+  <!-- ============================================ -->
+  <!-- 除霧器 -->
+  <div class="slice slice-cms" id="cms-icon-defrost" style="
+    left:30px; top:468px; width:105px; height:110px;
+    background-position: -30px -468px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 輪緣潤滑 -->
+  <div class="slice slice-cms" id="cms-icon-flange" style="
+    left:146px; top:466px; width:109px; height:110px;
+    background-position: -146px -466px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- 恢復集電弓自動升降（空白區域，暫用背景色） -->
+  <div class="infobar-bg" id="cms-icon-autopanto" style="
+    left:266px; top:466px; width:200px; height:110px;
+  "></div>
+
+  <!-- 降弓 -->
+  <div class="slice slice-cms" id="cms-icon-lowerpanto" style="
+    left:475px; top:466px; width:111px; height:108px;
+    background-position: -475px -466px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- ============================================ -->
+  <!--  右區：列車示意圖                              -->
+  <!-- ============================================ -->
+
+  <!-- 完全遮蓋右區（蓋掉原始離線車門+Err） -->
+  <div class="infobar-bg" style="left:655px; top:68px; width:370px; height:624px; z-index:5;"></div>
+
+  <!-- 列車車體（從來源圖切，放在遮蓋層上方） -->
+  <div class="slice slice-cms" style="
+    left:780px; top:75px; width:79px; height:619px;
+    background-position: -780px -75px;
+    background-size: 1024px 768px;
+    z-index:6;
+  "></div>
+
+  <!-- 主控制器幅度（右區頂部） -->
+  <div class="text-overlay" style="left:670px; top:88px; font-size:16px; color:#808878; z-index:7;" id="cms-mc-pct2">-86 %</div>
+
+  <!-- R / L 標示 -->
+  <div class="text-overlay" style="left:700px; top:80px; font-size:12px; color:#607080; z-index:7;">R</div>
+  <div class="text-overlay" style="left:900px; top:80px; font-size:12px; color:#607080; z-index:7;">L</div>
+
+  <!-- M5 車門 R（正常關閉，從圖27切） -->
+  <div class="slice slice-door" style="
+    left:680px; top:108px; width:70px; height:81px;
+    background-position: -867px -171px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+  <!-- M5 車門 L -->
+  <div class="slice slice-door" style="
+    left:876px; top:108px; width:71px; height:78px;
+    background-position: -696px -172px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+
+  <!-- M4 車門 R -->
+  <div class="slice slice-door" style="
+    left:680px; top:228px; width:70px; height:81px;
+    background-position: -867px -171px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+  <!-- M4 車門 L -->
+  <div class="slice slice-door" style="
+    left:876px; top:228px; width:71px; height:78px;
+    background-position: -696px -172px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+
+  <!-- M3 車門 R -->
+  <div class="slice slice-door" style="
+    left:680px; top:340px; width:70px; height:81px;
+    background-position: -867px -171px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+  <!-- M3 車門 L -->
+  <div class="slice slice-door" style="
+    left:876px; top:340px; width:71px; height:78px;
+    background-position: -696px -172px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+
+  <!-- M2 車門 R -->
+  <div class="slice slice-door" style="
+    left:680px; top:435px; width:70px; height:81px;
+    background-position: -867px -171px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+  <!-- M2 車門 L -->
+  <div class="slice slice-door" style="
+    left:876px; top:435px; width:71px; height:78px;
+    background-position: -696px -172px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+
+  <!-- M1 車門 R -->
+  <div class="slice slice-door" style="
+    left:680px; top:555px; width:70px; height:81px;
+    background-position: -867px -171px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+  <!-- M1 車門 L -->
+  <div class="slice slice-door" style="
+    left:876px; top:555px; width:71px; height:78px;
+    background-position: -696px -172px;
+    background-size: 1027px 627px;
+    z-index:7;
+  "></div>
+
+  <!-- ============================================ -->
+  <!--  底部選單列                                    -->
+  <!-- ============================================ -->
+  <div class="slice slice-cms" style="
+    left:0px; top:692px; width:1024px; height:76px;
+    background-position: 0px -692px;
+    background-size: 1024px 768px;
+  "></div>
+
+  <!-- TRSC 測試模式文字遮蓋 -->
+  <div class="infobar-bg" style="left:250px; top:590px; width:200px; height:80px;"></div>
+
+</div>
+
+</body>
+</html>

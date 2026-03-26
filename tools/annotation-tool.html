@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>駕駛室設備座標標註工具</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a2e; color: #eee; font-family: "Microsoft JhengHei", sans-serif; }
+
+/* 頂部工具列 */
+.toolbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: #16213e; padding: 8px 16px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 2px solid #0f3460; flex-wrap: wrap;
+}
+.toolbar select {
+  padding: 6px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #0f3460;
+  background: #1a1a2e; color: #eee; min-width: 320px;
+}
+.toolbar button {
+  padding: 6px 14px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer;
+}
+.btn-export { background: #e94560; color: white; }
+.btn-export:hover { background: #c73e54; }
+.btn-clear { background: #555; color: white; }
+.btn-clear:hover { background: #777; }
+.btn-delete { background: #8b4513; color: white; }
+.btn-delete:hover { background: #a0522d; }
+.toolbar .info {
+  font-size: 12px; color: #aaa; margin-left: auto;
+}
+.toolbar .count { color: #e94560; font-weight: bold; font-size: 14px; }
+
+/* 圖片容器 */
+.canvas-wrap {
+  margin-top: 52px; position: relative; display: inline-block; cursor: crosshair;
+}
+.canvas-wrap img {
+  display: block; user-select: none; -webkit-user-drag: none;
+}
+.canvas-wrap svg {
+  position: absolute; top: 0; left: 0; pointer-events: none;
+}
+
+/* 標記圓點 */
+.marker {
+  pointer-events: all; cursor: pointer; transition: r 0.15s;
+}
+.marker:hover { r: 14; }
+
+/* Tooltip */
+.tooltip {
+  position: fixed; background: rgba(0,0,0,0.9); color: #fff; padding: 6px 10px;
+  border-radius: 4px; font-size: 13px; pointer-events: none; z-index: 200;
+  display: none; white-space: nowrap;
+}
+
+/* 座標顯示 */
+.coord-display {
+  position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8);
+  padding: 6px 12px; border-radius: 4px; font-size: 13px; font-family: monospace;
+  z-index: 100;
+}
+
+/* 右側已標註清單 */
+.sidebar {
+  position: fixed; top: 52px; right: 0; width: 280px; bottom: 0;
+  background: #16213e; overflow-y: auto; border-left: 2px solid #0f3460;
+  padding: 8px; z-index: 99;
+}
+.sidebar h3 { font-size: 13px; color: #aaa; margin-bottom: 6px; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 6px; padding: 4px 6px;
+  font-size: 12px; border-radius: 3px; cursor: pointer; margin-bottom: 2px;
+}
+.sidebar-item:hover { background: #1a1a2e; }
+.sidebar-item .dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.sidebar-item .name { flex: 1; }
+.sidebar-item .coord { color: #888; font-family: monospace; font-size: 11px; }
+.sidebar-item.done { opacity: 1; }
+.sidebar-item.pending { opacity: 0.4; }
+
+/* 區域顏色 */
+.zone-A { background: #e94560; }
+.zone-B { background: #e9a045; }
+.zone-C { background: #45e9a0; }
+.zone-D { background: #4590e9; }
+.zone-E { background: #a045e9; }
+.zone-F { background: #e9e045; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <select id="equipSelect"></select>
+  <button class="btn-delete" onclick="deleteSelected()">刪除目前標記</button>
+  <button class="btn-clear" onclick="clearAll()">全部清除</button>
+  <button class="btn-export" onclick="exportJSON()">匯出 JSON</button>
+  <span class="count" id="countDisplay">0 / 43</span>
+  <span class="info">點擊圖片標記位置 | 滾輪縮放 | 右鍵拖曳平移</span>
+</div>
+
+<div class="canvas-wrap" id="canvasWrap">
+  <img id="cabImg" src="../cab-simulator/img/cab-3d.png" width="1411" height="613" />
+  <svg id="overlaySvg" width="1411" height="613" viewBox="0 0 1411 613"></svg>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+<div class="coord-display" id="coordDisplay">X: — Y: —</div>
+
+<div class="sidebar" id="sidebar">
+  <h3>設備標註清單</h3>
+  <div id="sidebarList"></div>
+</div>
+
+<script>
+// 43 項設備定義
+const EQUIPMENT = [
+  // A 區：顯示器
+  { id: "A1", name: "CCTV 螢幕", zone: "A" },
+  { id: "A2", name: "CMS 螢幕 (Selectron)", zone: "A" },
+  { id: "A5", name: "車速表", zone: "A" },
+  { id: "A6", name: "ATP 速度監控 HMI", zone: "A" },
+  { id: "A7", name: "DCI 螢幕 (THALES)", zone: "A" },
+  // B 區：右側按鈕面板
+  { id: "B1", name: "安全煞車", zone: "B" },
+  { id: "B2", name: "客室緊急煞車動作", zone: "B" },
+  { id: "B3", name: "總故障 ERROR", zone: "B" },
+  { id: "B4", name: "無架空線區間", zone: "B" },
+  { id: "B5", name: "集電方式選擇", zone: "B" },
+  { id: "B6", name: "架空線區間", zone: "B" },
+  { id: "B7", name: "霧燈", zone: "B" },
+  { id: "B8", name: "頭燈", zone: "B" },
+  { id: "B9", name: "警笛", zone: "B" },
+  { id: "B10", name: "方向燈/警示燈", zone: "B" },
+  { id: "B11", name: "雨刷", zone: "B" },
+  { id: "B12", name: "通話", zone: "B" },
+  // C 區
+  { id: "C1", name: "後視鏡 CCTV", zone: "C" },
+  // D 區：主控區
+  { id: "D1", name: "主控鑰匙開關", zone: "D" },
+  { id: "D2", name: "停機連鎖按鈕", zone: "D" },
+  { id: "D3", name: "行車模式選擇旋鈕", zone: "D" },
+  { id: "D4", name: "主控制器把手", zone: "D" },
+  { id: "D5", name: "DSD 駕駛失能保護", zone: "D" },
+  // E 區：應急+控制
+  { id: "E1", name: "集電弓降弓 HV OFF", zone: "E" },
+  { id: "E2", name: "客室110V插座開關", zone: "E" },
+  { id: "E3", name: "蓄電池24V", zone: "E" },
+  { id: "E4", name: "駐車煞車 P", zone: "E" },
+  { id: "E5", name: "零速度 Zero Speed", zone: "E" },
+  { id: "E6", name: "列車自動保護 ATP", zone: "E" },
+  { id: "E7", name: "空調關閉 HVAC OFF", zone: "E" },
+  { id: "E8", name: "降級模式 EDM", zone: "E" },
+  { id: "E9", name: "上下車門 Doors", zone: "E" },
+  { id: "E10", name: "煞車解除 Brake Release", zone: "E" },
+  { id: "E11", name: "拖救模式 Towing", zone: "E" },
+  { id: "E12", name: "駕駛室照明", zone: "E" },
+  { id: "E13", name: "客室照明", zone: "E" },
+  { id: "E14", name: "電動遮陽簾", zone: "E" },
+  { id: "E15", name: "第一道車門開/關", zone: "E" },
+  // F 區：扶手按鈕
+  { id: "F1", name: "左側開門", zone: "F" },
+  { id: "F2", name: "車門選擇", zone: "F" },
+  { id: "F3", name: "右側開門", zone: "F" },
+  { id: "F4", name: "電磁軌道煞車 MTB", zone: "F" },
+  { id: "F5", name: "撒砂 Sand", zone: "F" },
+];
+
+const ZONE_COLORS = {
+  A: "#e94560", B: "#e9a045", C: "#45e9a0",
+  D: "#4590e9", E: "#a045e9", F: "#e9e045"
+};
+
+// 狀態
+let markers = {}; // { id: { x, y } }
+let currentId = null;
+
+// 嘗試從 localStorage 恢復
+try {
+  const saved = localStorage.getItem("cab-markers");
+  if (saved) markers = JSON.parse(saved);
+} catch(e) {}
+
+// 初始化下拉選單
+const select = document.getElementById("equipSelect");
+EQUIPMENT.forEach(eq => {
+  const opt = document.createElement("option");
+  opt.value = eq.id;
+  opt.textContent = `${eq.id} — ${eq.name}`;
+  select.appendChild(opt);
+});
+select.addEventListener("change", () => { currentId = select.value; });
+currentId = select.value;
+
+// 圖片點擊
+const wrap = document.getElementById("canvasWrap");
+const img = document.getElementById("cabImg");
+
+wrap.addEventListener("click", (e) => {
+  const rect = img.getBoundingClientRect();
+  const scaleX = 1411 / rect.width;
+  const scaleY = 613 / rect.height;
+  const x = Math.round((e.clientX - rect.left) * scaleX);
+  const y = Math.round((e.clientY - rect.top) * scaleY);
+
+  if (x < 0 || x > 1411 || y < 0 || y > 613) return;
+
+  markers[currentId] = { x, y };
+  save();
+  render();
+  autoNext();
+});
+
+// 滑鼠移動顯示座標
+wrap.addEventListener("mousemove", (e) => {
+  const rect = img.getBoundingClientRect();
+  const scaleX = 1411 / rect.width;
+  const scaleY = 613 / rect.height;
+  const x = Math.round((e.clientX - rect.left) * scaleX);
+  const y = Math.round((e.clientY - rect.top) * scaleY);
+  document.getElementById("coordDisplay").textContent = `X: ${x}  Y: ${y}`;
+});
+
+// 自動跳下一個未標記的設備
+function autoNext() {
+  const currentIdx = EQUIPMENT.findIndex(e => e.id === currentId);
+  for (let i = 1; i <= EQUIPMENT.length; i++) {
+    const next = EQUIPMENT[(currentIdx + i) % EQUIPMENT.length];
+    if (!markers[next.id]) {
+      select.value = next.id;
+      currentId = next.id;
+      return;
+    }
+  }
+}
+
+// 渲染標記
+function render() {
+  const svg = document.getElementById("overlaySvg");
+  svg.innerHTML = "";
+
+  Object.entries(markers).forEach(([id, pos]) => {
+    const eq = EQUIPMENT.find(e => e.id === id);
+    if (!eq) return;
+    const color = ZONE_COLORS[eq.zone];
+
+    // 外圈
+    const outerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    outerCircle.setAttribute("cx", pos.x);
+    outerCircle.setAttribute("cy", pos.y);
+    outerCircle.setAttribute("r", "12");
+    outerCircle.setAttribute("fill", color);
+    outerCircle.setAttribute("fill-opacity", "0.3");
+    outerCircle.setAttribute("stroke", color);
+    outerCircle.setAttribute("stroke-width", "2");
+    svg.appendChild(outerCircle);
+
+    // 內圈
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", pos.x);
+    circle.setAttribute("cy", pos.y);
+    circle.setAttribute("r", "6");
+    circle.setAttribute("fill", color);
+    circle.setAttribute("class", "marker");
+    circle.setAttribute("data-id", id);
+    svg.appendChild(circle);
+
+    // 文字標籤
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", pos.x);
+    text.setAttribute("y", pos.y - 16);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("font-size", "10");
+    text.setAttribute("fill", "white");
+    text.setAttribute("stroke", "black");
+    text.setAttribute("stroke-width", "0.5");
+    text.setAttribute("font-family", "sans-serif");
+    text.textContent = id;
+    svg.appendChild(text);
+  });
+
+  // Tooltip 事件
+  svg.querySelectorAll(".marker").forEach(m => {
+    m.addEventListener("mouseenter", (e) => {
+      const id = m.getAttribute("data-id");
+      const eq = EQUIPMENT.find(e => e.id === id);
+      const pos = markers[id];
+      const tip = document.getElementById("tooltip");
+      tip.textContent = `${id} ${eq.name} (${pos.x}, ${pos.y})`;
+      tip.style.display = "block";
+    });
+    m.addEventListener("mousemove", (e) => {
+      const tip = document.getElementById("tooltip");
+      tip.style.left = (e.clientX + 12) + "px";
+      tip.style.top = (e.clientY - 30) + "px";
+    });
+    m.addEventListener("mouseleave", () => {
+      document.getElementById("tooltip").style.display = "none";
+    });
+    m.addEventListener("click", (e) => {
+      e.stopPropagation();
+      select.value = m.getAttribute("data-id");
+      currentId = m.getAttribute("data-id");
+    });
+  });
+
+  // 更新側欄
+  renderSidebar();
+  // 更新計數
+  const done = Object.keys(markers).length;
+  document.getElementById("countDisplay").textContent = `${done} / ${EQUIPMENT.length}`;
+}
+
+// 側欄
+function renderSidebar() {
+  const list = document.getElementById("sidebarList");
+  list.innerHTML = "";
+  EQUIPMENT.forEach(eq => {
+    const div = document.createElement("div");
+    const done = !!markers[eq.id];
+    div.className = `sidebar-item ${done ? "done" : "pending"}`;
+    div.innerHTML = `
+      <span class="dot zone-${eq.zone}"></span>
+      <span class="name">${eq.id} ${eq.name}</span>
+      ${done ? `<span class="coord">(${markers[eq.id].x},${markers[eq.id].y})</span>` : ""}
+    `;
+    div.addEventListener("click", () => {
+      select.value = eq.id;
+      currentId = eq.id;
+    });
+    list.appendChild(div);
+  });
+}
+
+// 儲存到 localStorage
+function save() {
+  localStorage.setItem("cab-markers", JSON.stringify(markers));
+}
+
+// 刪除目前選取
+function deleteSelected() {
+  if (markers[currentId]) {
+    delete markers[currentId];
+    save();
+    render();
+  }
+}
+
+// 全部清除
+function clearAll() {
+  if (confirm("確定要清除所有標記嗎？")) {
+    markers = {};
+    save();
+    render();
+  }
+}
+
+// 匯出 JSON
+function exportJSON() {
+  const output = {};
+  EQUIPMENT.forEach(eq => {
+    if (markers[eq.id]) {
+      output[eq.id] = {
+        name: eq.name,
+        zone: eq.zone,
+        x: markers[eq.id].x,
+        y: markers[eq.id].y
+      };
+    }
+  });
+
+  const json = JSON.stringify(output, null, 2);
+
+  // 下載檔案
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "equipment-coordinates.json";
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // 同時顯示在 console
+  console.log("=== 設備座標 JSON ===");
+  console.log(json);
+
+  const done = Object.keys(markers).length;
+  alert(`已匯出 ${done} 個設備座標！\n未標記: ${EQUIPMENT.length - done} 個`);
+}
+
+// 初始渲染
+render();
+</script>
+</body>
+</html>

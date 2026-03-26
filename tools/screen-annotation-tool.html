@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>螢幕區域標註工具（四點+圓形）</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a2e; color: #eee; font-family: "Microsoft JhengHei", sans-serif; }
+
+.toolbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: #16213e; padding: 8px 16px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 2px solid #0f3460; flex-wrap: wrap;
+}
+.toolbar select {
+  padding: 6px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #0f3460;
+  background: #1a1a2e; color: #eee; min-width: 280px;
+}
+.toolbar button {
+  padding: 6px 14px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer;
+}
+.btn-export { background: #e94560; color: white; }
+.btn-export:hover { background: #c73e54; }
+.btn-clear { background: #555; color: white; }
+.btn-clear:hover { background: #777; }
+.btn-delete { background: #8b4513; color: white; }
+.btn-delete:hover { background: #a0522d; }
+.toolbar .count { color: #e94560; font-weight: bold; font-size: 14px; }
+.toolbar .step-info {
+  font-size: 13px; color: #e9a045; font-weight: bold;
+}
+
+.canvas-wrap {
+  margin-top: 52px; position: relative; display: inline-block; cursor: crosshair;
+}
+.canvas-wrap img { display: block; user-select: none; -webkit-user-drag: none; }
+.canvas-wrap svg { position: absolute; top: 0; left: 0; }
+
+.coord-display {
+  position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8);
+  padding: 6px 12px; border-radius: 4px; font-size: 13px; font-family: monospace; z-index: 100;
+}
+
+.sidebar {
+  position: fixed; top: 52px; right: 0; width: 300px; bottom: 0;
+  background: #16213e; overflow-y: auto; border-left: 2px solid #0f3460;
+  padding: 8px; z-index: 99;
+}
+.sidebar h3 { font-size: 13px; color: #aaa; margin-bottom: 6px; }
+.sidebar-item {
+  padding: 6px 8px; font-size: 12px; border-radius: 3px; margin-bottom: 4px;
+  background: rgba(255,255,255,0.03); cursor: pointer;
+}
+.sidebar-item:hover { background: rgba(255,255,255,0.06); }
+.sidebar-item.done { border-left: 3px solid #e94560; }
+.sidebar-item.pending { border-left: 3px solid #333; opacity: 0.5; }
+.sidebar-item .name { color: #88b8e8; font-weight: bold; }
+.sidebar-item .coord { color: #888; font-family: monospace; font-size: 10px; display: block; margin-top: 2px; }
+.sidebar-item .shape-tag {
+  display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 3px;
+  margin-left: 6px;
+}
+.shape-quad { background: #2a4a6a; color: #88b8e8; }
+.shape-circle { background: #2a6a4a; color: #88e8b8; }
+
+.help {
+  position: fixed; bottom: 10px; right: 320px; background: rgba(0,0,0,0.85);
+  padding: 10px 16px; border-radius: 6px; font-size: 12px; color: #aaa; z-index: 100;
+  line-height: 1.8; max-width: 320px;
+}
+.help strong { color: #e9a045; }
+.help .key { color: #88b8e8; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <select id="screenSelect"></select>
+  <span class="step-info" id="stepInfo">— 請點擊左上角</span>
+  <button class="btn-delete" onclick="deleteSelected()">刪除目前</button>
+  <button class="btn-clear" onclick="clearAll()">全部清除</button>
+  <button class="btn-export" onclick="exportJSON()">匯出 JSON</button>
+  <span class="count" id="countDisplay">0 / 5</span>
+</div>
+
+<div class="canvas-wrap" id="canvasWrap">
+  <img id="cabImg" src="../cab-simulator/img/cab-3d.png" width="1411" height="613" />
+  <svg id="overlaySvg" width="1411" height="613" viewBox="0 0 1411 613"></svg>
+</div>
+
+<div class="coord-display" id="coordDisplay">X: — Y: —</div>
+
+<div class="help">
+  <strong>四邊形模式（CMS、DCI 等）：</strong><br>
+  依序點擊 <span class="key">左上 → 右上 → 右下 → 左下</span> 四個角<br><br>
+  <strong>圓形模式（車速表）：</strong><br>
+  依序點擊 <span class="key">圓心</span>，再點擊 <span class="key">邊緣</span> 定半徑<br><br>
+  點錯可按「刪除目前」重來
+</div>
+
+<div class="sidebar">
+  <h3>螢幕區域標註</h3>
+  <div id="sidebarList"></div>
+</div>
+
+<script>
+const SCREENS = [
+  { id: "A1", name: "CCTV 螢幕",           shape: "quad" },
+  { id: "A2", name: "CMS 螢幕 (Selectron)", shape: "quad" },
+  { id: "A5", name: "車速表（雙針時數表）",  shape: "circle" },
+  { id: "A6", name: "ATP 速度監控 HMI",     shape: "quad" },
+  { id: "A7", name: "DCI 螢幕 (THALES)",    shape: "quad" },
+  { id: "C1", name: "後視鏡 CCTV",          shape: "quad" },
+];
+
+const QUAD_STEPS = ["左上角", "右上角", "右下角", "左下角"];
+const CIRCLE_STEPS = ["圓心", "邊緣（定半徑）"];
+
+let regions = {};
+let currentId = null;
+let tempPoints = [];  // 進行中的點
+
+// 恢復
+try {
+  const saved = localStorage.getItem("screen-regions-v2");
+  if (saved) regions = JSON.parse(saved);
+} catch(e) {}
+
+// 下拉選單
+const select = document.getElementById("screenSelect");
+SCREENS.forEach(s => {
+  const opt = document.createElement("option");
+  opt.value = s.id;
+  const tag = s.shape === "circle" ? "⊙ 圓形" : "◇ 四邊形";
+  opt.textContent = `${s.id} — ${s.name}  [${tag}]`;
+  select.appendChild(opt);
+});
+select.addEventListener("change", () => { switchTo(select.value); });
+currentId = select.value;
+
+function switchTo(id) {
+  currentId = id;
+  select.value = id;
+  tempPoints = [];
+  updateStepInfo();
+  render();
+}
+
+const wrap = document.getElementById("canvasWrap");
+const img = document.getElementById("cabImg");
+const svg = document.getElementById("overlaySvg");
+
+function toImgCoords(e) {
+  const rect = img.getBoundingClientRect();
+  return {
+    x: Math.round((e.clientX - rect.left) * (1411 / rect.width)),
+    y: Math.round((e.clientY - rect.top) * (613 / rect.height))
+  };
+}
+
+// 滑鼠移動
+wrap.addEventListener("mousemove", (e) => {
+  const c = toImgCoords(e);
+  document.getElementById("coordDisplay").textContent = `X: ${c.x}  Y: ${c.y}`;
+});
+
+// 點擊
+wrap.addEventListener("click", (e) => {
+  const pt = toImgCoords(e);
+  if (pt.x < 0 || pt.x > 1411 || pt.y < 0 || pt.y > 613) return;
+
+  const screen = SCREENS.find(s => s.id === currentId);
+  if (!screen) return;
+
+  tempPoints.push(pt);
+
+  if (screen.shape === "circle") {
+    if (tempPoints.length === 2) {
+      const cx = tempPoints[0].x;
+      const cy = tempPoints[0].y;
+      const dx = tempPoints[1].x - cx;
+      const dy = tempPoints[1].y - cy;
+      const r = Math.round(Math.sqrt(dx * dx + dy * dy));
+      regions[currentId] = { shape: "circle", cx, cy, r };
+      tempPoints = [];
+      save();
+      autoNext();
+    }
+  } else {
+    if (tempPoints.length === 4) {
+      regions[currentId] = {
+        shape: "quad",
+        points: tempPoints.map(p => [p.x, p.y])
+      };
+      tempPoints = [];
+      save();
+      autoNext();
+    }
+  }
+
+  updateStepInfo();
+  render();
+});
+
+function updateStepInfo() {
+  const screen = SCREENS.find(s => s.id === currentId);
+  if (!screen) return;
+  const el = document.getElementById("stepInfo");
+
+  if (regions[currentId]) {
+    el.textContent = `✓ ${currentId} 已完成`;
+    el.style.color = "#45e9a0";
+    return;
+  }
+
+  el.style.color = "#e9a045";
+  if (screen.shape === "circle") {
+    const step = Math.min(tempPoints.length, CIRCLE_STEPS.length - 1);
+    el.textContent = `${currentId}：請點擊 ${CIRCLE_STEPS[step]}（${tempPoints.length}/${CIRCLE_STEPS.length}）`;
+  } else {
+    const step = Math.min(tempPoints.length, QUAD_STEPS.length - 1);
+    el.textContent = `${currentId}：請點擊 ${QUAD_STEPS[step]}（${tempPoints.length}/${QUAD_STEPS.length}）`;
+  }
+}
+
+function render() {
+  svg.innerHTML = "";
+
+  // 已完成的區域
+  Object.entries(regions).forEach(([id, reg]) => {
+    if (reg.shape === "circle") {
+      drawCircle(reg.cx, reg.cy, reg.r, id, false);
+    } else {
+      drawQuad(reg.points, id, false);
+    }
+  });
+
+  // 進行中的點
+  if (tempPoints.length > 0) {
+    const screen = SCREENS.find(s => s.id === currentId);
+    // 畫已點的點
+    tempPoints.forEach((pt, i) => {
+      const c = createEl("circle", {
+        cx: pt.x, cy: pt.y, r: 5,
+        fill: "#e9a045", stroke: "white", "stroke-width": 1.5
+      });
+      svg.appendChild(c);
+      // 標號
+      const t = createEl("text", {
+        x: pt.x + 8, y: pt.y - 8,
+        "font-size": 10, fill: "#e9a045", "font-family": "sans-serif"
+      });
+      if (screen.shape === "circle") {
+        t.textContent = CIRCLE_STEPS[i];
+      } else {
+        t.textContent = QUAD_STEPS[i];
+      }
+      svg.appendChild(t);
+    });
+
+    // 畫進行中的連線
+    if (screen.shape === "quad" && tempPoints.length > 1) {
+      let d = `M${tempPoints[0].x},${tempPoints[0].y}`;
+      for (let i = 1; i < tempPoints.length; i++) {
+        d += ` L${tempPoints[i].x},${tempPoints[i].y}`;
+      }
+      const path = createEl("path", {
+        d, fill: "none", stroke: "#e9a045", "stroke-width": 2, "stroke-dasharray": "6,3"
+      });
+      svg.appendChild(path);
+    }
+  }
+
+  renderSidebar();
+  document.getElementById("countDisplay").textContent =
+    `${Object.keys(regions).length} / ${SCREENS.length}`;
+}
+
+function drawQuad(points, label, isTemp) {
+  const color = isTemp ? "#e9a045" : "#e94560";
+  const d = `M${points[0][0]},${points[0][1]} L${points[1][0]},${points[1][1]} L${points[2][0]},${points[2][1]} L${points[3][0]},${points[3][1]} Z`;
+
+  const path = createEl("path", {
+    d,
+    fill: `rgba(233,69,96,0.12)`,
+    stroke: color, "stroke-width": 2
+  });
+  svg.appendChild(path);
+
+  // 四角小點
+  points.forEach(p => {
+    const c = createEl("circle", {
+      cx: p[0], cy: p[1], r: 4,
+      fill: color, stroke: "white", "stroke-width": 1
+    });
+    svg.appendChild(c);
+  });
+
+  // 標籤
+  const cx = points.reduce((s, p) => s + p[0], 0) / 4;
+  const cy = points.reduce((s, p) => s + p[1], 0) / 4;
+  const text = createEl("text", {
+    x: cx, y: cy + 4, "text-anchor": "middle",
+    "font-size": 13, fill: "white", "font-weight": "bold",
+    stroke: "black", "stroke-width": 0.3,
+    "font-family": "sans-serif"
+  });
+  text.textContent = label;
+  svg.appendChild(text);
+}
+
+function drawCircle(cx, cy, r, label, isTemp) {
+  const color = isTemp ? "#e9a045" : "#45e9a0";
+
+  const circle = createEl("circle", {
+    cx, cy, r,
+    fill: "rgba(69,233,160,0.12)",
+    stroke: color, "stroke-width": 2
+  });
+  svg.appendChild(circle);
+
+  // 圓心點
+  const dot = createEl("circle", {
+    cx, cy, r: 3, fill: color
+  });
+  svg.appendChild(dot);
+
+  const text = createEl("text", {
+    x: cx, y: cy + 4, "text-anchor": "middle",
+    "font-size": 13, fill: "white", "font-weight": "bold",
+    stroke: "black", "stroke-width": 0.3,
+    "font-family": "sans-serif"
+  });
+  text.textContent = label;
+  svg.appendChild(text);
+}
+
+function renderSidebar() {
+  const list = document.getElementById("sidebarList");
+  list.innerHTML = "";
+  SCREENS.forEach(s => {
+    const div = document.createElement("div");
+    const done = !!regions[s.id];
+    div.className = `sidebar-item ${done ? "done" : "pending"}`;
+
+    const shapeTag = s.shape === "circle"
+      ? '<span class="shape-tag shape-circle">圓形</span>'
+      : '<span class="shape-tag shape-quad">四邊形</span>';
+
+    let coordText = "尚未標記";
+    if (done) {
+      const r = regions[s.id];
+      if (r.shape === "circle") {
+        coordText = `cx=${r.cx} cy=${r.cy} r=${r.r}`;
+      } else {
+        coordText = r.points.map((p, i) => `P${i+1}(${p[0]},${p[1]})`).join("  ");
+      }
+    }
+
+    div.innerHTML = `
+      <span class="name">${s.id} ${s.name}</span>${shapeTag}
+      <span class="coord">${coordText}</span>
+    `;
+    div.addEventListener("click", () => switchTo(s.id));
+    list.appendChild(div);
+  });
+}
+
+function autoNext() {
+  const idx = SCREENS.findIndex(s => s.id === currentId);
+  for (let i = 1; i <= SCREENS.length; i++) {
+    const next = SCREENS[(idx + i) % SCREENS.length];
+    if (!regions[next.id]) {
+      switchTo(next.id);
+      return;
+    }
+  }
+  updateStepInfo();
+  render();
+}
+
+function save() { localStorage.setItem("screen-regions-v2", JSON.stringify(regions)); }
+
+function deleteSelected() {
+  delete regions[currentId];
+  tempPoints = [];
+  save();
+  updateStepInfo();
+  render();
+}
+
+function clearAll() {
+  if (!confirm("確定清除所有標記？")) return;
+  regions = {};
+  tempPoints = [];
+  save();
+  updateStepInfo();
+  render();
+}
+
+function exportJSON() {
+  const json = JSON.stringify(regions, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "screen-regions.json";
+  a.click();
+  console.log(json);
+  alert(`已匯出 ${Object.keys(regions).length} 個螢幕區域！`);
+}
+
+function createEl(tag, attrs) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+updateStepInfo();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>CMS 圖標切片標註工具</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a2e; color: #eee; font-family: "Microsoft JhengHei", sans-serif; }
+
+.toolbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: #16213e; padding: 8px 16px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 2px solid #0f3460; flex-wrap: wrap;
+}
+.toolbar select {
+  padding: 6px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #0f3460;
+  background: #1a1a2e; color: #eee; min-width: 320px;
+}
+.toolbar button {
+  padding: 6px 14px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer;
+}
+.btn-export { background: #e94560; color: white; }
+.btn-export:hover { background: #c73e54; }
+.btn-clear { background: #555; color: white; }
+.btn-delete { background: #8b4513; color: white; }
+.btn-switch { background: #2878b8; color: white; }
+.toolbar .count { color: #e94560; font-weight: bold; font-size: 14px; }
+.toolbar .step-info { font-size: 13px; color: #e9a045; font-weight: bold; }
+
+.canvas-wrap {
+  margin-top: 56px; position: relative; display: inline-block; cursor: crosshair;
+}
+.canvas-wrap img { display: block; user-select: none; -webkit-user-drag: none; }
+.canvas-wrap svg { position: absolute; top: 0; left: 0; pointer-events: none; }
+
+.coord-display {
+  position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8);
+  padding: 6px 12px; border-radius: 4px; font-size: 13px; font-family: monospace; z-index: 100;
+}
+
+.sidebar {
+  position: fixed; top: 56px; right: 0; width: 320px; bottom: 0;
+  background: #16213e; overflow-y: auto; border-left: 2px solid #0f3460;
+  padding: 8px; z-index: 99;
+}
+.sidebar h3 { font-size: 13px; color: #aaa; margin-bottom: 6px; }
+.sidebar-item {
+  padding: 6px 8px; font-size: 12px; border-radius: 3px; margin-bottom: 3px;
+  cursor: pointer; border-left: 3px solid #333;
+}
+.sidebar-item:hover { background: rgba(255,255,255,0.05); }
+.sidebar-item.done { border-left-color: #e94560; opacity: 1; }
+.sidebar-item.pending { opacity: 0.4; }
+.sidebar-item .name { color: #88b8e8; font-weight: bold; }
+.sidebar-item .coord { color: #888; font-family: monospace; font-size: 10px; display: block; margin-top: 2px; }
+.sidebar-item .cat { font-size: 10px; color: #606878; }
+
+.preview-box {
+  margin-top: 10px; padding: 8px; background: #0a0a14; border-radius: 6px;
+  border: 1px solid #1a3a5c;
+}
+.preview-box h4 { font-size: 12px; color: #708090; margin-bottom: 6px; }
+.preview-box canvas { border: 1px solid #2a4a6a; background: #000; }
+
+.img-selector {
+  position: fixed; bottom: 10px; right: 340px; background: rgba(0,0,0,0.85);
+  padding: 8px 14px; border-radius: 6px; font-size: 12px; color: #aaa; z-index: 100;
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <select id="itemSelect"></select>
+  <span class="step-info" id="stepInfo">— 拖曳框選區域</span>
+  <button class="btn-delete" onclick="deleteSelected()">刪除</button>
+  <button class="btn-clear" onclick="clearAll()">全部清除</button>
+  <button class="btn-switch" onclick="switchImage()">切換圖片</button>
+  <button class="btn-export" onclick="exportJSON()">匯出 JSON</button>
+  <span class="count" id="countDisplay">0 / 0</span>
+</div>
+
+<div class="canvas-wrap" id="canvasWrap">
+  <img id="srcImg" draggable="false" />
+  <svg id="overlaySvg"></svg>
+</div>
+
+<div class="coord-display" id="coordDisplay">X: — Y: —</div>
+
+<div class="sidebar">
+  <h3>CMS 切片標註</h3>
+  <div id="sidebarList"></div>
+  <div class="preview-box">
+    <h4>切片預覽</h4>
+    <canvas id="previewCanvas" width="120" height="120"></canvas>
+  </div>
+</div>
+
+<script>
+// 切片項目清單
+const ITEMS = [
+  // 訊息欄
+  { id: "infobar", name: "訊息欄整體", cat: "框架" },
+  { id: "errorbar", name: "故障訊息欄整體", cat: "框架" },
+  { id: "statusbar", name: "狀態資訊欄整體", cat: "框架" },
+  { id: "menubar", name: "底部選單列整體", cat: "框架" },
+
+  // 訊息欄圖示
+  { id: "icon-hazard", name: "警示燈 △", cat: "訊息欄" },
+  { id: "icon-turn-lr", name: "方向燈 ←→", cat: "訊息欄" },
+  { id: "icon-status-se", name: "狀態欄 Se", cat: "訊息欄" },
+  { id: "icon-headlight", name: "頭燈", cat: "訊息欄" },
+
+  // 左區第1排
+  { id: "icon-depot", name: "機廠電源插座", cat: "第1排" },
+  { id: "icon-saloon-light", name: "客室照明", cat: "第1排" },
+  { id: "icon-abs", name: "ABS", cat: "第1排" },
+  { id: "icon-panto", name: "集電弓狀態", cat: "第1排" },
+
+  // 左區第2排
+  { id: "icon-wiper", name: "雨刷水箱", cat: "第2排" },
+  { id: "icon-fire", name: "火警偵煙器（紅色亮起）", cat: "第2排" },
+  { id: "icon-peb", name: "客室緊急煞車 PEB", cat: "第2排" },
+  { id: "icon-110v", name: "客室110V", cat: "第2排" },
+  { id: "icon-380v", name: "輔助電力380V", cat: "第2排" },
+
+  // 左區第3排
+  { id: "icon-defroster", name: "玻璃除霧器", cat: "第3排" },
+  { id: "icon-flange-lube", name: "輪緣潤滑啟動", cat: "第3排" },
+  { id: "icon-reset-mirror", name: "重置後視鏡", cat: "第3排" },
+  { id: "icon-auto-panto", name: "恢復集電弓自動升降", cat: "第3排" },
+  { id: "icon-lower-panto", name: "降弓", cat: "第3排" },
+
+  // 右區
+  { id: "train-diagram", name: "列車示意圖整體", cat: "右區" },
+  { id: "train-m5", name: "M5 車體+轉向架", cat: "右區" },
+  { id: "train-m4", name: "M4 車體", cat: "右區" },
+  { id: "train-m3", name: "M3 車體", cat: "右區" },
+  { id: "train-m2", name: "M2 車體", cat: "右區" },
+  { id: "train-m1", name: "M1 車體+轉向架", cat: "右區" },
+  { id: "door-closed-r", name: "車門關閉 R（一組）", cat: "右區" },
+  { id: "door-closed-l", name: "車門關閉 L（一組）", cat: "右區" },
+  { id: "door-offline", name: "車門離線/異常（紅叉）", cat: "右區" },
+  { id: "tcu-t-on", name: "轉向架 T（亮起）", cat: "右區" },
+  { id: "tcu-err", name: "轉向架 Err", cat: "右區" },
+  { id: "status-hb", name: "HB 顯示", cat: "右區" },
+  { id: "status-se", name: "Se 顯示（右區）", cat: "右區" },
+
+  // 底部選單
+  { id: "menu-settings", name: "設定按鈕", cat: "選單" },
+  { id: "menu-monitor", name: "監視按鈕", cat: "選單" },
+  { id: "menu-control", name: "控制按鈕", cat: "選單" },
+  { id: "menu-diag", name: "診斷按鈕", cat: "選單" },
+  { id: "menu-home", name: "首頁按鈕", cat: "選單" },
+];
+
+// 圖片列表
+const IMAGES = [
+  { src: "../../../../Desktop/lrt-manual-images/圖_3.1-4_HMI_main_screen_HMI_人機介面主畫面.png", label: "CMS 測試畫面（圖26）" },
+  { src: "../../../../Desktop/lrt-manual-images/圖_4.6-2_HMI_door_screen_人機介面車門開關顯示螢幕畫面.png", label: "車門狀態畫面（圖27）" },
+];
+let currentImageIdx = 0;
+
+let regions = {};
+let currentId = null;
+let isDragging = false;
+let dragStart = { x: 0, y: 0 };
+let dragCurrent = { x: 0, y: 0 };
+let imgNatW = 0, imgNatH = 0;
+
+// 恢復
+try {
+  const saved = localStorage.getItem("cms-slices");
+  if (saved) regions = JSON.parse(saved);
+} catch(e) {}
+
+// 初始化
+const select = document.getElementById("itemSelect");
+ITEMS.forEach(item => {
+  const opt = document.createElement("option");
+  opt.value = item.id;
+  opt.textContent = `[${item.cat}] ${item.id} — ${item.name}`;
+  select.appendChild(opt);
+});
+select.addEventListener("change", () => { currentId = select.value; updateStepInfo(); render(); });
+currentId = select.value;
+
+const wrap = document.getElementById("canvasWrap");
+const imgEl = document.getElementById("srcImg");
+const svg = document.getElementById("overlaySvg");
+
+function loadImage() {
+  const img = IMAGES[currentImageIdx];
+  imgEl.src = img.src;
+  imgEl.onload = () => {
+    imgNatW = imgEl.naturalWidth;
+    imgNatH = imgEl.naturalHeight;
+    imgEl.width = imgNatW;
+    imgEl.height = imgNatH;
+    svg.setAttribute("width", imgNatW);
+    svg.setAttribute("height", imgNatH);
+    svg.setAttribute("viewBox", `0 0 ${imgNatW} ${imgNatH}`);
+    render();
+  };
+}
+loadImage();
+
+function switchImage() {
+  currentImageIdx = (currentImageIdx + 1) % IMAGES.length;
+  loadImage();
+  alert("切換到: " + IMAGES[currentImageIdx].label);
+}
+
+function toImgCoords(e) {
+  const rect = imgEl.getBoundingClientRect();
+  return {
+    x: Math.round((e.clientX - rect.left) * (imgNatW / rect.width)),
+    y: Math.round((e.clientY - rect.top) * (imgNatH / rect.height))
+  };
+}
+
+wrap.addEventListener("mousedown", (e) => {
+  if (e.button !== 0) return;
+  isDragging = true;
+  dragStart = toImgCoords(e);
+  dragCurrent = { ...dragStart };
+  e.preventDefault();
+});
+
+wrap.addEventListener("mousemove", (e) => {
+  const c = toImgCoords(e);
+  document.getElementById("coordDisplay").textContent = `X: ${c.x}  Y: ${c.y}  (${imgNatW}×${imgNatH})`;
+  if (!isDragging) return;
+  dragCurrent = c;
+  renderWithPreview();
+});
+
+document.addEventListener("mouseup", (e) => {
+  if (!isDragging) return;
+  isDragging = false;
+  dragCurrent = toImgCoords(e);
+  const x = Math.min(dragStart.x, dragCurrent.x);
+  const y = Math.min(dragStart.y, dragCurrent.y);
+  const w = Math.abs(dragCurrent.x - dragStart.x);
+  const h = Math.abs(dragCurrent.y - dragStart.y);
+  if (w < 5 || h < 5) return;
+
+  regions[currentId] = { x, y, w, h, src: IMAGES[currentImageIdx].label };
+  save();
+  render();
+  showPreview(currentId);
+  autoNext();
+});
+
+function renderWithPreview() {
+  render();
+  if (!isDragging) return;
+  const x = Math.min(dragStart.x, dragCurrent.x);
+  const y = Math.min(dragStart.y, dragCurrent.y);
+  const w = Math.abs(dragCurrent.x - dragStart.x);
+  const h = Math.abs(dragCurrent.y - dragStart.y);
+  const rect = createEl("rect", {
+    x, y, width: w, height: h,
+    fill: "rgba(233,69,96,0.2)", stroke: "#e94560", "stroke-width": 2, "stroke-dasharray": "6,3"
+  });
+  svg.appendChild(rect);
+}
+
+function render() {
+  svg.innerHTML = "";
+  const colors = {
+    "框架": "#4590e9", "訊息欄": "#e9a045", "第1排": "#45e9a0",
+    "第2排": "#e94560", "第3排": "#a045e9", "右區": "#e9e045", "選單": "#45c9e9"
+  };
+
+  Object.entries(regions).forEach(([id, reg]) => {
+    const item = ITEMS.find(i => i.id === id);
+    const color = item ? (colors[item.cat] || "#e94560") : "#e94560";
+
+    const rect = createEl("rect", {
+      x: reg.x, y: reg.y, width: reg.w, height: reg.h,
+      fill: `${color}22`, stroke: color, "stroke-width": 2
+    });
+    svg.appendChild(rect);
+
+    const text = createEl("text", {
+      x: reg.x + reg.w / 2, y: reg.y - 4,
+      "text-anchor": "middle", "font-size": 12, fill: "white",
+      stroke: "black", "stroke-width": 0.3, "font-family": "sans-serif"
+    });
+    text.textContent = id;
+    svg.appendChild(text);
+  });
+
+  renderSidebar();
+  document.getElementById("countDisplay").textContent =
+    `${Object.keys(regions).length} / ${ITEMS.length}`;
+  updateStepInfo();
+}
+
+function renderSidebar() {
+  const list = document.getElementById("sidebarList");
+  list.innerHTML = "";
+  let lastCat = "";
+
+  ITEMS.forEach(item => {
+    if (item.cat !== lastCat) {
+      const h = document.createElement("div");
+      h.style.cssText = "font-size:11px;color:#506878;margin:8px 0 4px;border-top:1px solid #1a3a5c;padding-top:4px;";
+      h.textContent = `── ${item.cat} ──`;
+      list.appendChild(h);
+      lastCat = item.cat;
+    }
+
+    const div = document.createElement("div");
+    const done = !!regions[item.id];
+    div.className = `sidebar-item ${done ? "done" : "pending"}`;
+    let coordText = "尚未標記";
+    if (done) {
+      const r = regions[item.id];
+      coordText = `x=${r.x} y=${r.y} w=${r.w} h=${r.h}`;
+    }
+    div.innerHTML = `<span class="name">${item.id}</span> <span class="cat">${item.name}</span><span class="coord">${coordText}</span>`;
+    div.addEventListener("click", () => {
+      select.value = item.id;
+      currentId = item.id;
+      updateStepInfo();
+      if (done) showPreview(item.id);
+    });
+    list.appendChild(div);
+  });
+}
+
+function showPreview(id) {
+  if (!regions[id]) return;
+  const reg = regions[id];
+  const canvas = document.getElementById("previewCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const scale = Math.min(120 / reg.w, 120 / reg.h, 2);
+  canvas.width = Math.round(reg.w * scale);
+  canvas.height = Math.round(reg.h * scale);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(imgEl, reg.x, reg.y, reg.w, reg.h, 0, 0, canvas.width, canvas.height);
+}
+
+function updateStepInfo() {
+  const el = document.getElementById("stepInfo");
+  if (regions[currentId]) {
+    el.textContent = `✓ ${currentId} 已標記`;
+    el.style.color = "#45e9a0";
+  } else {
+    el.textContent = `${currentId}：拖曳框選區域`;
+    el.style.color = "#e9a045";
+  }
+}
+
+function autoNext() {
+  const idx = ITEMS.findIndex(i => i.id === currentId);
+  for (let i = 1; i <= ITEMS.length; i++) {
+    const next = ITEMS[(idx + i) % ITEMS.length];
+    if (!regions[next.id]) {
+      select.value = next.id;
+      currentId = next.id;
+      updateStepInfo();
+      return;
+    }
+  }
+  updateStepInfo();
+}
+
+function save() { localStorage.setItem("cms-slices", JSON.stringify(regions)); }
+
+function deleteSelected() {
+  delete regions[currentId];
+  save(); render();
+}
+
+function clearAll() {
+  if (!confirm("確定清除所有標記？")) return;
+  regions = {};
+  save(); render();
+}
+
+function exportJSON() {
+  const json = JSON.stringify(regions, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "cms-slices.json";
+  a.click();
+  console.log(json);
+  alert(`已匯出 ${Object.keys(regions).length} 個切片區域！`);
+}
+
+function createEl(tag, attrs) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+updateStepInfo();
+</script>
+</body>
+</html>

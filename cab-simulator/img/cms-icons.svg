@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- ===================================================
+         CMS 首頁元件庫
+         每個 symbol 有兩種狀態 class：
+           .off  = 暗色（未作動）   stroke/fill: #383848
+           .on   = 亮色（作動中）   stroke/fill: #c8c8a0
+           .warn = 紅色（警告）     stroke/fill: #d03030
+           .blue = 藍色（按鈕）     fill: #2878b8
+           .orange = 橘色（作動中） stroke/fill: #d89030
+         viewBox 統一 0 0 60 50
+    =================================================== -->
+
+    <!-- 1. 警示燈 △ -->
+    <symbol id="cms-icon-hazard" viewBox="0 0 60 50">
+      <polygon points="30,6 52,44 8,44" fill="none" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="30" y="40" text-anchor="middle" font-size="18" font-weight="bold" font-family="sans-serif">!</text>
+    </symbol>
+
+    <!-- 2. 方向燈（左） -->
+    <symbol id="cms-icon-turn-left" viewBox="0 0 60 50">
+      <polygon points="8,25 28,10 28,40" fill="none" stroke-width="2.5" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- 2. 方向燈（右） -->
+    <symbol id="cms-icon-turn-right" viewBox="0 0 60 50">
+      <polygon points="52,25 32,10 32,40" fill="none" stroke-width="2.5" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- 3. 狀態欄（文字，由外部設定 text） -->
+    <symbol id="cms-icon-status" viewBox="0 0 80 40">
+      <rect x="2" y="2" width="76" height="36" rx="5" fill="none" stroke-width="2"/>
+    </symbol>
+
+    <!-- 4. 頭燈（近光燈） -->
+    <symbol id="cms-icon-lowbeam" viewBox="0 0 60 50">
+      <path d="M8,25 C12,12 28,12 32,25 C28,38 12,38 8,25 Z" fill="none" stroke-width="2"/>
+      <line x1="34" y1="16" x2="48" y2="12" stroke-width="1.8"/>
+      <line x1="34" y1="25" x2="50" y2="25" stroke-width="1.8"/>
+      <line x1="34" y1="34" x2="48" y2="38" stroke-width="1.8"/>
+    </symbol>
+
+    <!-- 4. 頭燈（遠光燈） -->
+    <symbol id="cms-icon-highbeam" viewBox="0 0 60 50">
+      <path d="M8,25 C12,12 28,12 32,25 C28,38 12,38 8,25 Z" fill="none" stroke-width="2"/>
+      <line x1="34" y1="14" x2="52" y2="14" stroke-width="1.8"/>
+      <line x1="34" y1="22" x2="52" y2="22" stroke-width="1.8"/>
+      <line x1="34" y1="30" x2="52" y2="30" stroke-width="1.8"/>
+      <line x1="34" y1="38" x2="52" y2="38" stroke-width="1.8"/>
+    </symbol>
+
+    <!-- 6. 機廠電源插座 -->
+    <symbol id="cms-icon-depot-power" viewBox="0 0 60 50">
+      <line x1="4" y1="25" x2="16" y2="25" stroke-width="3"/>
+      <rect x="16" y="18" width="8" height="14" rx="1.5" fill="none" stroke-width="2"/>
+      <line x1="24" y1="25" x2="30" y2="25" stroke-width="2"/>
+      <circle cx="40" cy="25" r="10" fill="none" stroke-width="2"/>
+      <line x1="50" y1="25" x2="56" y2="25" stroke-width="2"/>
+    </symbol>
+
+    <!-- 7. 客室照明（太陽形） -->
+    <symbol id="cms-icon-saloon-light" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="8" fill="none" stroke-width="2"/>
+      <line x1="30" y1="8" x2="30" y2="14" stroke-width="1.8"/>
+      <line x1="30" y1="36" x2="30" y2="42" stroke-width="1.8"/>
+      <line x1="13" y1="25" x2="19" y2="25" stroke-width="1.8"/>
+      <line x1="41" y1="25" x2="47" y2="25" stroke-width="1.8"/>
+      <line x1="18" y1="13" x2="22" y2="17" stroke-width="1.5"/>
+      <line x1="42" y1="13" x2="38" y2="17" stroke-width="1.5"/>
+      <line x1="18" y1="37" x2="22" y2="33" stroke-width="1.5"/>
+      <line x1="42" y1="37" x2="38" y2="33" stroke-width="1.5"/>
+    </symbol>
+
+    <!-- 8. ABS -->
+    <symbol id="cms-icon-abs" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="18" fill="none" stroke-width="2"/>
+      <text x="30" y="31" text-anchor="middle" font-size="14" font-weight="bold" font-family="sans-serif">ABS</text>
+    </symbol>
+
+    <!-- 9. 集電弓狀態（箭頭形） -->
+    <symbol id="cms-icon-pantograph" viewBox="0 0 60 50">
+      <polyline points="8,44 30,8 52,44" fill="none" stroke-width="2.5" stroke-linejoin="round"/>
+      <line x1="16" y1="28" x2="44" y2="28" stroke-width="2"/>
+    </symbol>
+
+    <!-- 10. 雨刷水箱（擋風玻璃+水滴） -->
+    <symbol id="cms-icon-wiper-water" viewBox="0 0 60 50">
+      <path d="M8,42 Q30,8 52,42" fill="none" stroke-width="2"/>
+      <circle cx="22" cy="24" r="3"/>
+      <circle cx="30" cy="18" r="3"/>
+      <circle cx="38" cy="24" r="3"/>
+    </symbol>
+
+    <!-- 11. 火警偵煙器（火焰+圓框） -->
+    <symbol id="cms-icon-fire" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="18" fill="none" stroke-width="2"/>
+      <path d="M23,38 Q27,22 30,14 Q33,22 37,38" fill="none" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- 12. 客室緊急煞車 PEB -->
+    <symbol id="cms-icon-peb" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="18" fill="none" stroke-width="2"/>
+      <circle cx="22" cy="18" r="4.5" fill="none" stroke-width="1.5"/>
+      <circle cx="30" cy="15" r="4.5" fill="none" stroke-width="1.5"/>
+      <circle cx="38" cy="18" r="4.5" fill="none" stroke-width="1.5"/>
+      <path d="M16,40 Q22,28 28,40" fill="none" stroke-width="1.2"/>
+      <path d="M24,38 Q30,26 36,38" fill="none" stroke-width="1.2"/>
+      <path d="M32,40 Q38,28 44,40" fill="none" stroke-width="1.2"/>
+    </symbol>
+
+    <!-- 13. 客室110V插座（閃電+文字） -->
+    <symbol id="cms-icon-110v" viewBox="0 0 60 55">
+      <path d="M34,4 L22,24 L30,24 L24,44" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="30" y="54" text-anchor="middle" font-size="11" font-family="sans-serif">110 V</text>
+    </symbol>
+
+    <!-- 14. 輔助電力380V（閃電+文字） -->
+    <symbol id="cms-icon-380v" viewBox="0 0 60 55">
+      <path d="M34,4 L22,24 L30,24 L24,44" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="30" y="54" text-anchor="middle" font-size="11" font-family="sans-serif">380 V</text>
+    </symbol>
+
+    <!-- 15. 玻璃除霧器（擋風玻璃+熱線） -->
+    <symbol id="cms-icon-defroster" viewBox="0 0 60 50">
+      <path d="M8,42 Q30,8 52,42" fill="none" stroke-width="2"/>
+      <line x1="22" y1="38" x2="22" y2="20" stroke-width="1.8"/>
+      <line x1="30" y1="38" x2="30" y2="14" stroke-width="1.8"/>
+      <line x1="38" y1="38" x2="38" y2="20" stroke-width="1.8"/>
+    </symbol>
+
+    <!-- 16. 輪緣潤滑啟動（文字按鈕） -->
+    <symbol id="cms-icon-flange-lube" viewBox="0 0 90 55">
+      <rect x="1" y="1" width="88" height="53" rx="5" stroke-width="1.5"/>
+      <text x="45" y="24" text-anchor="middle" font-size="13" font-family="sans-serif">輪緣潤滑</text>
+      <text x="45" y="42" text-anchor="middle" font-size="13" font-family="sans-serif">啟動</text>
+    </symbol>
+
+    <!-- 17. 重置後視鏡（文字按鈕） -->
+    <symbol id="cms-icon-reset-mirror" viewBox="0 0 90 55">
+      <rect x="1" y="1" width="88" height="53" rx="5" stroke-width="1.5"/>
+      <text x="45" y="24" text-anchor="middle" font-size="13" font-family="sans-serif">重置</text>
+      <text x="45" y="42" text-anchor="middle" font-size="13" font-family="sans-serif">後視鏡</text>
+    </symbol>
+
+    <!-- 18. 恢復集電弓自動升降（文字按鈕） -->
+    <symbol id="cms-icon-auto-panto" viewBox="0 0 90 55">
+      <rect x="1" y="1" width="88" height="53" rx="5" stroke-width="1.5"/>
+      <text x="45" y="20" text-anchor="middle" font-size="11" font-family="sans-serif">恢復集電弓</text>
+      <text x="45" y="38" text-anchor="middle" font-size="11" font-family="sans-serif">自動升降</text>
+    </symbol>
+
+    <!-- 19. 降弓（文字按鈕） -->
+    <symbol id="cms-icon-lower-panto" viewBox="0 0 70 55">
+      <rect x="1" y="1" width="68" height="53" rx="5" stroke-width="1.5"/>
+      <text x="35" y="34" text-anchor="middle" font-size="16" font-family="sans-serif">降弓</text>
+    </symbol>
+
+    <!-- 20. 轉向架 T（牽引正常） -->
+    <symbol id="cms-icon-tcu" viewBox="0 0 30 30">
+      <circle cx="15" cy="15" r="12" fill="none" stroke-width="2"/>
+      <text x="15" y="20" text-anchor="middle" font-size="14" font-weight="bold" font-family="sans-serif">T</text>
+    </symbol>
+
+    <!-- 車門（單扇） -->
+    <symbol id="cms-icon-door" viewBox="0 0 16 22">
+      <rect x="1" y="1" width="14" height="20" rx="1.5" fill="none" stroke-width="1.3"/>
+    </symbol>
+
+    <!-- 車門（單扇，開啟=藍色填滿） -->
+    <symbol id="cms-icon-door-open" viewBox="0 0 16 22">
+      <rect x="1" y="1" width="14" height="20" rx="1.5" stroke-width="1.3"/>
+    </symbol>
+
+    <!-- 底部選單按鈕 -->
+    <!-- 設定齒輪 -->
+    <symbol id="cms-menu-settings" viewBox="0 0 28 28">
+      <circle cx="14" cy="14" r="5" fill="none" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="10" fill="none" stroke-width="1.5" stroke-dasharray="4,3"/>
+    </symbol>
+
+    <!-- 監視圖表 -->
+    <symbol id="cms-menu-monitor" viewBox="0 0 28 28">
+      <rect x="2" y="4" width="24" height="20" rx="2" fill="none" stroke-width="1.5"/>
+      <polyline points="6,20 10,12 16,16 22,8" fill="none" stroke-width="1.5"/>
+    </symbol>
+
+    <!-- 控制列表 -->
+    <symbol id="cms-menu-control" viewBox="0 0 28 28">
+      <rect x="2" y="4" width="24" height="20" rx="2" fill="none" stroke-width="1.5"/>
+      <line x1="7" y1="11" x2="21" y2="11" stroke-width="1.2"/>
+      <line x1="7" y1="16" x2="21" y2="16" stroke-width="1.2"/>
+      <line x1="7" y1="21" x2="21" y2="21" stroke-width="1.2"/>
+    </symbol>
+
+    <!-- 診斷放大鏡 -->
+    <symbol id="cms-menu-diag" viewBox="0 0 28 28">
+      <circle cx="12" cy="12" r="8" fill="none" stroke-width="1.5"/>
+      <line x1="18" y1="18" x2="26" y2="26" stroke-width="2.5" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- 首頁房子 -->
+    <symbol id="cms-menu-home" viewBox="0 0 28 28">
+      <polygon points="14,4 4,14 8,14 8,24 20,24 20,14 24,14" fill="none" stroke-width="1.8" stroke-linejoin="round"/>
+    </symbol>
+
+  </defs>
+</svg>

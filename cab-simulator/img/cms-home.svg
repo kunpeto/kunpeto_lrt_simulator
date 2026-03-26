@@ -1,0 +1,372 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="cmsBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c1828"/>
+      <stop offset="100%" stop-color="#081018"/>
+    </linearGradient>
+    <linearGradient id="blueBtn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2878b8"/>
+      <stop offset="100%" stop-color="#205898"/>
+    </linearGradient>
+    <linearGradient id="trainBody" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#182840"/>
+      <stop offset="100%" stop-color="#1c3048"/>
+    </linearGradient>
+
+    <!-- ===== 元件 symbol 定義 ===== -->
+
+    <!-- 1. 警示燈 △ -->
+    <symbol id="icon-hazard" viewBox="0 0 60 50">
+      <polygon points="30,6 52,44 8,44" fill="none" stroke="inherit" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="30" y="40" text-anchor="middle" font-size="18" font-weight="bold" fill="inherit" font-family="sans-serif">!</text>
+    </symbol>
+
+    <!-- 2a. 方向燈左 -->
+    <symbol id="icon-turn-left" viewBox="0 0 30 30">
+      <polygon points="4,15 20,5 20,25" fill="none" stroke="inherit" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- 2b. 方向燈右 -->
+    <symbol id="icon-turn-right" viewBox="0 0 30 30">
+      <polygon points="26,15 10,5 10,25" fill="none" stroke="inherit" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- 4a. 近光燈 -->
+    <symbol id="icon-lowbeam" viewBox="0 0 60 50">
+      <path d="M8,25 C12,12 28,12 32,25 C28,38 12,38 8,25 Z" fill="none" stroke="inherit" stroke-width="2"/>
+      <line x1="35" y1="15" x2="48" y2="10" stroke="inherit" stroke-width="1.8"/>
+      <line x1="35" y1="25" x2="50" y2="25" stroke="inherit" stroke-width="1.8"/>
+      <line x1="35" y1="35" x2="48" y2="40" stroke="inherit" stroke-width="1.8"/>
+    </symbol>
+
+    <!-- 6. 機廠電源插座 -->
+    <symbol id="icon-depot" viewBox="0 0 60 50">
+      <line x1="2" y1="25" x2="15" y2="25" stroke="inherit" stroke-width="3"/>
+      <rect x="15" y="18" width="8" height="14" rx="1.5" fill="none" stroke="inherit" stroke-width="2"/>
+      <line x1="23" y1="25" x2="30" y2="25" stroke="inherit" stroke-width="2"/>
+      <circle cx="40" cy="25" r="10" fill="none" stroke="inherit" stroke-width="2"/>
+      <line x1="50" y1="25" x2="58" y2="25" stroke="inherit" stroke-width="2"/>
+    </symbol>
+
+    <!-- 7. 客室照明 -->
+    <symbol id="icon-saloon-light" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="8" fill="none" stroke="inherit" stroke-width="2"/>
+      <line x1="30" y1="8" x2="30" y2="14" stroke="inherit" stroke-width="1.8"/>
+      <line x1="30" y1="36" x2="30" y2="42" stroke="inherit" stroke-width="1.8"/>
+      <line x1="13" y1="25" x2="19" y2="25" stroke="inherit" stroke-width="1.8"/>
+      <line x1="41" y1="25" x2="47" y2="25" stroke="inherit" stroke-width="1.8"/>
+      <line x1="18" y1="13" x2="22" y2="17" stroke="inherit" stroke-width="1.5"/>
+      <line x1="42" y1="13" x2="38" y2="17" stroke="inherit" stroke-width="1.5"/>
+      <line x1="18" y1="37" x2="22" y2="33" stroke="inherit" stroke-width="1.5"/>
+      <line x1="42" y1="37" x2="38" y2="33" stroke="inherit" stroke-width="1.5"/>
+    </symbol>
+
+    <!-- 8. ABS -->
+    <symbol id="icon-abs" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="18" fill="none" stroke="inherit" stroke-width="2"/>
+      <text x="30" y="31" text-anchor="middle" font-size="14" font-weight="bold" fill="inherit" font-family="sans-serif">ABS</text>
+    </symbol>
+
+    <!-- 9. 集電弓 -->
+    <symbol id="icon-panto" viewBox="0 0 60 50">
+      <polyline points="8,44 30,8 52,44" fill="none" stroke="inherit" stroke-width="2.5" stroke-linejoin="round"/>
+      <line x1="16" y1="28" x2="44" y2="28" stroke="inherit" stroke-width="2"/>
+    </symbol>
+
+    <!-- 10. 雨刷水箱 -->
+    <symbol id="icon-wiper" viewBox="0 0 60 50">
+      <path d="M8,42 Q30,8 52,42" fill="none" stroke="inherit" stroke-width="2"/>
+      <circle cx="22" cy="24" r="3" fill="inherit" stroke="none"/>
+      <circle cx="30" cy="18" r="3" fill="inherit" stroke="none"/>
+      <circle cx="38" cy="24" r="3" fill="inherit" stroke="none"/>
+    </symbol>
+
+    <!-- 11. 火警偵煙器 -->
+    <symbol id="icon-fire" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="18" fill="none" stroke="inherit" stroke-width="2"/>
+      <path d="M23,40 Q27,22 30,14 Q33,22 37,40" fill="none" stroke="inherit" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- 12. 客室緊急煞車 PEB -->
+    <symbol id="icon-peb" viewBox="0 0 60 50">
+      <circle cx="30" cy="25" r="18" fill="none" stroke="inherit" stroke-width="2"/>
+      <circle cx="22" cy="18" r="4.5" fill="none" stroke="inherit" stroke-width="1.3"/>
+      <circle cx="30" cy="15" r="4.5" fill="none" stroke="inherit" stroke-width="1.3"/>
+      <circle cx="38" cy="18" r="4.5" fill="none" stroke="inherit" stroke-width="1.3"/>
+      <path d="M16,40 Q22,28 28,40" fill="none" stroke="inherit" stroke-width="1.2"/>
+      <path d="M24,38 Q30,26 36,38" fill="none" stroke="inherit" stroke-width="1.2"/>
+      <path d="M32,40 Q38,28 44,40" fill="none" stroke="inherit" stroke-width="1.2"/>
+    </symbol>
+
+    <!-- 13. 閃電（110V/380V 共用） -->
+    <symbol id="icon-lightning" viewBox="0 0 60 55">
+      <path d="M34,4 L22,24 L30,24 L24,44" fill="none" stroke="inherit" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- 15. 玻璃除霧器 -->
+    <symbol id="icon-defroster" viewBox="0 0 60 50">
+      <path d="M8,42 Q30,8 52,42" fill="none" stroke="inherit" stroke-width="2"/>
+      <line x1="22" y1="38" x2="22" y2="20" stroke="inherit" stroke-width="1.8"/>
+      <line x1="30" y1="38" x2="30" y2="14" stroke="inherit" stroke-width="1.8"/>
+      <line x1="38" y1="38" x2="38" y2="20" stroke="inherit" stroke-width="1.8"/>
+    </symbol>
+
+    <!-- T 牽引 -->
+    <symbol id="icon-tcu" viewBox="0 0 30 30">
+      <circle cx="15" cy="15" r="12" fill="none" stroke="inherit" stroke-width="2"/>
+      <text x="15" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="inherit" font-family="sans-serif">T</text>
+    </symbol>
+
+    <!-- 首頁房子 -->
+    <symbol id="icon-home" viewBox="0 0 28 28">
+      <polygon points="14,3 3,14 7,14 7,25 21,25 21,14 25,14" fill="none" stroke="inherit" stroke-width="1.8" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+
+  <!-- ===== 樣式 ===== -->
+  <style>
+    .off { stroke: #383848; fill: #383848; }
+    .on  { stroke: #c8c8a0; fill: #c8c8a0; }
+    .warn { stroke: #d03030; fill: #d03030; }
+    .status-text { fill: #c8b850; font-family: sans-serif; font-weight: bold; }
+    .dim-text { fill: #484858; font-family: sans-serif; }
+    .info-text { fill: #c8c8a0; font-family: monospace; }
+    .sub-text { fill: #808878; font-family: sans-serif; }
+    .err-text { fill: #b89030; font-family: sans-serif; }
+    .line { stroke: #383850; stroke-width: 1; }
+    .blue-fill { fill: url(#blueBtn); stroke: #4898d0; stroke-width: 1.5; }
+    .dark-box { fill: rgba(12,18,32,0.9); stroke: #282838; stroke-width: 1; }
+  </style>
+
+  <!-- ===== 背景 ===== -->
+  <rect width="800" height="600" fill="url(#cmsBg)"/>
+  <text x="785" y="14" text-anchor="end" font-size="11" fill="#506070" font-family="sans-serif" font-style="italic" font-weight="bold">§ Selectron</text>
+
+  <!-- ============================================ -->
+  <!--  第一行 訊息欄  y=0~48                       -->
+  <!-- ============================================ -->
+  <line x1="0" y1="48" x2="800" y2="48" class="line"/>
+
+  <text x="20" y="22" font-size="16" class="info-text" letter-spacing="2">06 29 12</text>
+  <text x="170" y="22" font-size="13" class="sub-text">列車編號:</text>
+  <text x="262" y="22" font-size="16" class="info-text" font-weight="bold">111</text>
+  <text x="20" y="42" font-size="13" class="sub-text" font-family="monospace">2026-03-25</text>
+  <text x="170" y="42" font-size="16" class="info-text">0 km/h</text>
+
+  <!-- 警示燈（暗=未啟動） -->
+  <use xlink:href="#icon-hazard" x="490" y="8" width="32" height="32" class="off"/>
+
+  <!-- 方向燈左+右（暗=未啟動） -->
+  <use xlink:href="#icon-turn-left" x="535" y="12" width="22" height="22" class="off"/>
+  <use xlink:href="#icon-turn-right" x="560" y="12" width="22" height="22" class="off"/>
+
+  <!-- 狀態：HB -->
+  <rect x="600" y="8" width="55" height="30" rx="4" fill="none" stroke="#a09048" stroke-width="2"/>
+  <text x="627" y="29" text-anchor="middle" font-size="17" class="status-text">HB</text>
+
+  <!-- 頭燈（亮=近光燈啟動） -->
+  <use xlink:href="#icon-lowbeam" x="675" y="5" width="45" height="38" class="on"/>
+
+  <!-- ============================================ -->
+  <!--  第二行 故障訊息欄  y=48~76                   -->
+  <!-- ============================================ -->
+  <line x1="0" y1="76" x2="800" y2="76" class="line"/>
+
+  <circle cx="18" cy="62" r="8" fill="none" stroke="#3878a8" stroke-width="1.5"/>
+  <text x="18" y="66" text-anchor="middle" font-size="11" fill="#3878a8" font-weight="bold" font-family="serif">i</text>
+  <polygon points="42,53 50,70 34,70" fill="#b82020"/>
+  <text x="42" y="66" text-anchor="middle" font-size="8" fill="white" font-weight="bold">!</text>
+  <text x="60" y="67" font-size="12" class="err-text">4610</text>
+  <text x="105" y="67" font-size="11" fill="#806848" font-family="monospace">25.03.2026 - 05:00:30</text>
+  <text x="330" y="67" font-size="12" class="err-text">🔥 驅動/剎車控制C</text>
+
+  <!-- ============================================ -->
+  <!--  第三行 狀態資訊  y=76~100                    -->
+  <!-- ============================================ -->
+  <line x1="0" y1="100" x2="560" y2="100" class="line"/>
+
+  <text x="30" y="93" font-size="13" class="sub-text" font-family="monospace" text-decoration="underline">310786 km</text>
+  <line x1="160" y1="78" x2="160" y2="98" class="line"/>
+  <text x="178" y="93" font-size="13" class="sub-text" font-family="monospace">B</text>
+  <line x1="210" y1="78" x2="210" y2="98" class="line"/>
+  <text x="255" y="93" font-size="13" class="sub-text">主線模式</text>
+
+  <!-- 主控制器幅度 -->
+  <text x="570" y="93" font-size="13" class="sub-text" font-family="monospace">-86 %</text>
+
+  <!-- ============================================ -->
+  <!--  左區 第1排  y≈115                            -->
+  <!-- ============================================ -->
+
+  <!-- 機廠電源（暗=未連接） -->
+  <use xlink:href="#icon-depot" x="25" y="110" width="65" height="55" class="off"/>
+
+  <!-- 客室照明（暗=關閉） -->
+  <use xlink:href="#icon-saloon-light" x="120" y="110" width="65" height="55" class="off"/>
+
+  <!-- ABS（暗=未作動） -->
+  <use xlink:href="#icon-abs" x="215" y="110" width="65" height="55" class="off"/>
+
+  <!-- 集電弓（亮=已升弓） -->
+  <use xlink:href="#icon-panto" x="325" y="110" width="65" height="55" class="on"/>
+
+  <!-- ============================================ -->
+  <!--  左區 第2排  y≈195                            -->
+  <!-- ============================================ -->
+
+  <!-- 雨刷水箱（暗=正常） -->
+  <use xlink:href="#icon-wiper" x="25" y="195" width="65" height="55" class="off"/>
+
+  <!-- 火警偵煙器（暗=正常） -->
+  <use xlink:href="#icon-fire" x="120" y="195" width="65" height="55" class="off"/>
+
+  <!-- 客室緊急煞車 PEB（暗=正常） -->
+  <use xlink:href="#icon-peb" x="215" y="195" width="65" height="55" class="off"/>
+
+  <!-- 110V（暗=未供電） -->
+  <g class="off">
+    <use xlink:href="#icon-lightning" x="320" y="192" width="55" height="50"/>
+    <text x="348" y="250" text-anchor="middle" font-size="12" fill="inherit" font-family="sans-serif">110 V</text>
+  </g>
+
+  <!-- 380V（亮=正常供電） -->
+  <g class="on">
+    <use xlink:href="#icon-lightning" x="415" y="192" width="55" height="50"/>
+    <text x="443" y="250" text-anchor="middle" font-size="12" fill="inherit" font-family="sans-serif">380 V</text>
+  </g>
+
+  <!-- ============================================ -->
+  <!--  左區 第3排 功能按鈕  y≈290                    -->
+  <!-- ============================================ -->
+
+  <!-- 玻璃除霧器（藍底） -->
+  <rect x="25" y="290" width="75" height="58" rx="5" class="blue-fill"/>
+  <use xlink:href="#icon-defroster" x="30" y="293" width="65" height="50" stroke="white" fill="white"/>
+
+  <!-- 輪緣潤滑啟動（藍底） -->
+  <rect x="115" y="290" width="95" height="58" rx="5" class="blue-fill"/>
+  <text x="162" y="314" text-anchor="middle" font-size="14" fill="white" font-family="sans-serif">輪緣潤滑</text>
+  <text x="162" y="336" text-anchor="middle" font-size="14" fill="white" font-family="sans-serif">啟動</text>
+
+  <!-- 重置後視鏡（藍底） -->
+  <rect x="225" y="290" width="95" height="58" rx="5" class="blue-fill"/>
+  <text x="272" y="314" text-anchor="middle" font-size="14" fill="white" font-family="sans-serif">重置</text>
+  <text x="272" y="336" text-anchor="middle" font-size="14" fill="white" font-family="sans-serif">後視鏡</text>
+
+  <!-- 恢復集電弓自動升降（平常不顯示=暗底） -->
+  <rect x="335" y="290" width="95" height="58" rx="5" class="dark-box"/>
+
+  <!-- 降弓（暗底） -->
+  <rect x="445" y="290" width="75" height="58" rx="5" class="dark-box"/>
+  <text x="482" y="326" text-anchor="middle" font-size="16" class="dim-text">降弓</text>
+
+  <!-- ============================================ -->
+  <!--  右區 列車示意圖  x=560~                      -->
+  <!-- ============================================ -->
+  <line x1="555" y1="100" x2="555" y2="520" class="line"/>
+
+  <!-- R / L 標題 -->
+  <text x="660" y="115" text-anchor="middle" font-size="11" class="sub-text">R</text>
+  <text x="735" y="115" text-anchor="middle" font-size="11" class="sub-text">L</text>
+
+  <!-- ---- M5（頂部圓弧，有T×2） ---- -->
+  <rect x="590" y="125" width="34" height="75" rx="15" fill="url(#trainBody)" stroke="#2858a0" stroke-width="1.5"/>
+  <use xlink:href="#icon-tcu" x="592" y="128" width="30" height="30" class="on"/>
+  <text x="607" y="169" text-anchor="middle" font-size="9" fill="#706848" font-family="sans-serif">HB</text>
+  <use xlink:href="#icon-tcu" x="592" y="172" width="30" height="30" class="on"/>
+  <!-- M5 車門 R -->
+  <rect x="638" y="132" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="132" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="638" y="170" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="170" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <!-- M5 車門 L -->
+  <rect x="712" y="132" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="132" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="170" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="170" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <text x="775" y="170" font-size="10" class="sub-text">M5</text>
+
+  <!-- ---- M4 ---- -->
+  <rect x="590" y="210" width="34" height="60" rx="4" fill="url(#trainBody)" stroke="#2858a0" stroke-width="1.5"/>
+  <rect x="638" y="215" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="215" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="638" y="243" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="243" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="215" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="215" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="243" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="243" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+
+  <!-- ---- M3（無牽引，有HB） ---- -->
+  <rect x="590" y="280" width="34" height="60" rx="4" fill="url(#trainBody)" stroke="#2858a0" stroke-width="1.5"/>
+  <text x="607" y="315" text-anchor="middle" font-size="9" fill="#706848" font-family="sans-serif">HB</text>
+  <rect x="638" y="285" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="285" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="638" y="313" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="313" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="285" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="285" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="313" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="313" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+
+  <!-- ---- M2 ---- -->
+  <rect x="590" y="350" width="34" height="60" rx="4" fill="url(#trainBody)" stroke="#2858a0" stroke-width="1.5"/>
+  <rect x="638" y="355" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="355" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="638" y="383" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="383" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="355" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="355" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="383" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="383" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+
+  <!-- ---- M1（底部圓弧，有T×2） ---- -->
+  <rect x="590" y="420" width="34" height="75" rx="15" fill="url(#trainBody)" stroke="#2858a0" stroke-width="1.5"/>
+  <use xlink:href="#icon-tcu" x="592" y="423" width="30" height="30" class="on"/>
+  <text x="607" y="464" text-anchor="middle" font-size="9" fill="#706848" font-family="sans-serif">HB</text>
+  <use xlink:href="#icon-tcu" x="592" y="467" width="30" height="30" class="on"/>
+  <!-- M1 車門 R -->
+  <rect x="638" y="427" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="427" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="638" y="465" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="656" y="465" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <!-- M1 車門 L -->
+  <rect x="712" y="427" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="427" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="712" y="465" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <rect x="730" y="465" width="14" height="20" rx="1.5" fill="none" stroke="#405870" stroke-width="1.2"/>
+  <text x="775" y="465" font-size="10" class="sub-text">M1</text>
+
+  <!-- ============================================ -->
+  <!--  底部 主選單列  y=520~600                      -->
+  <!-- ============================================ -->
+  <rect x="0" y="520" width="800" height="80" fill="#0a1020"/>
+  <line x1="0" y1="520" x2="800" y2="520" class="line"/>
+
+  <!-- 設定 -->
+  <circle cx="36" cy="550" r="12" fill="none" stroke="#5080a0" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="36" cy="550" r="5" fill="none" stroke="#5080a0" stroke-width="1.5"/>
+  <text x="58" y="555" font-size="14" fill="#5080a0" font-family="sans-serif">設定</text>
+
+  <!-- 監視 -->
+  <rect x="142" y="538" width="26" height="22" rx="2" fill="none" stroke="#5080a0" stroke-width="1.5"/>
+  <polyline points="146,556 152,546 158,550 164,542" fill="none" stroke="#5080a0" stroke-width="1.5"/>
+  <text x="178" y="555" font-size="14" fill="#5080a0" font-family="sans-serif">監視</text>
+
+  <!-- 控制 -->
+  <rect x="282" y="538" width="26" height="22" rx="2" fill="none" stroke="#5080a0" stroke-width="1.5"/>
+  <line x1="286" y1="545" x2="304" y2="545" stroke="#5080a0" stroke-width="1.2"/>
+  <line x1="286" y1="550" x2="304" y2="550" stroke="#5080a0" stroke-width="1.2"/>
+  <line x1="286" y1="555" x2="304" y2="555" stroke="#5080a0" stroke-width="1.2"/>
+  <text x="318" y="555" font-size="14" fill="#5080a0" font-family="sans-serif">控制</text>
+
+  <!-- 診斷 -->
+  <circle cx="432" cy="548" r="9" fill="none" stroke="#5080a0" stroke-width="1.5"/>
+  <line x1="439" y1="555" x2="448" y2="564" stroke="#5080a0" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="458" y="555" font-size="14" fill="#5080a0" font-family="sans-serif">診斷</text>
+
+  <!-- 首頁（藍底=目前頁面） -->
+  <rect x="600" y="533" width="120" height="40" rx="6" class="blue-fill"/>
+  <use xlink:href="#icon-home" x="612" y="537" width="30" height="30" stroke="white" fill="none"/>
+  <text x="670" y="559" font-size="16" fill="white" font-weight="bold" font-family="sans-serif">首頁</text>
+</svg>
